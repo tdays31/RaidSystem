@@ -83,8 +83,8 @@
   gap: 24px;
   padding: 18px;
 }
-.rs-root .rs-side__card--status { flex: none; }
-.rs-root .rs-side__card.rs-skills { flex: 1; overflow-y: auto; gap: 0; }
+.rs-root .rs-side__card--status { flex: 7 1 0; overflow-y: auto; }   /* 약 70% */
+.rs-root .rs-side__card.rs-skills { flex: 3 1 0; overflow-y: auto; gap: 0; } /* 약 30% */
 .rs-root .rs-controls {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -255,6 +255,7 @@
 .rs-root .rs-action__item[aria-haspopup="true"]::after { content: "›"; content: "›" / ""; float: right; color: var(--rs-text-muted); }
 .rs-root .rs-action__item:hover,
 .rs-root .rs-action__item:focus-visible { background: #e6dcb8; outline: none; }
+.rs-root .rs-action__item:disabled { color: var(--rs-text-muted); opacity: .55; cursor: not-allowed; }
 .rs-root .rs-action__item[aria-checked="true"] { color: var(--rs-yellow); background: var(--rs-green-dark); }
 .rs-root .rs-action__foot {
   display: grid; gap: 4px;
@@ -342,6 +343,14 @@
 .rs-root .rs-skills__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .rs-root .rs-skills__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .rs-root .rs-skills__name { font-family: var(--rs-serif); font-size: 15px; font-weight: 700; color: var(--rs-green-dark); }
+.rs-root .rs-skills__tags { display: flex; gap: 4px; flex: none; }
+.rs-root .rs-skills__uses {
+  padding: 0 6px;
+  font-size: 11px; font-weight: 700; line-height: 17px;
+  color: var(--rs-green-dark); background: #e2eac3; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.rs-root .rs-skills__item[data-empty="true"] { opacity: .45; }
 .rs-root .rs-skills__power {
   flex: none; padding: 0 6px;
   font-size: 11px; font-weight: 700; line-height: 17px;
@@ -365,5 +374,7 @@
 @media (max-width: 768px) {
   .rs-root { grid-template-columns: 1fr; height: auto; min-height: 100vh; padding: 10px; overflow: visible; }
   .rs-root .rs-side { order: -1; }
+  .rs-root .rs-side__card--status,
+  .rs-root .rs-side__card.rs-skills { flex: none; }
   .rs-root .rs-chat-log { height: 50vh; }
 }

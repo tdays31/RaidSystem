@@ -51,7 +51,7 @@
     "state": {
       "boss": { "hp": 4381, "hpMax": 6000 },
       "players": [
-        { "id": "self", "hp": 708, "status": "정상" },
+        { "id": "self", "hp": 708, "status": "정상", "skills": [{ "id": "power-strike", "uses": 2 }, { "id": "war-cry", "uses": 2 }, { "id": "whirlwind", "uses": 2 }] },
         { "id": "p1", "hp": 540, "status": "정상" },
         { "id": "p2", "hp": 1210, "status": "정상" },
         { "id": "p3", "hp": 600, "status": "정상" },

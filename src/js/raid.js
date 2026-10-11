@@ -49,20 +49,20 @@
       id: 'self', name: '플레이어', job: 'tank', status: '정상', hp: 820, hpMax: 1000, atk: 145, def: 98, crit: 12,
       done: false, choice: null,
       skills: [
-        { id: 'power-strike', name: '강타', power: 1.6, desc: '온 힘을 실은 일격으로 보스에게 큰 피해를 입힌다.' },
-        { id: 'war-cry', name: '전투의 함성', power: 1.2, desc: '함성과 함께 돌진해 보스를 공격한다.' },
-        { id: 'whirlwind', name: '회오리 베기', power: 1.4, desc: '몸을 회전하며 연속으로 베어낸다.' }
+        { id: 'power-strike', name: '강타', power: 1.6, uses: 3, maxUses: 3, desc: '온 힘을 실은 일격으로 보스에게 큰 피해를 입힌다.' },
+        { id: 'war-cry', name: '전투의 함성', power: 1.2, uses: 2, maxUses: 2, desc: '함성과 함께 돌진해 보스를 공격한다.' },
+        { id: 'whirlwind', name: '회오리 베기', power: 1.4, uses: 2, maxUses: 2, desc: '몸을 회전하며 연속으로 베어낸다.' }
       ]
     },
     party: [
       { id: 'p1', name: '아린', job: 'dealer', status: '정상', hp: 540, hpMax: 640, atk: 165, def: 55, crit: 20, done: false, choice: null,
-        skills: [{ id: 'fireball', name: '화염구', power: 1.7 }] },
+        skills: [{ id: 'fireball', name: '화염구', power: 1.7, uses: 3, maxUses: 3 }] },
       { id: 'p2', name: '도윤', job: 'tank', status: '정상', hp: 1210, hpMax: 1300, atk: 95, def: 140, crit: 5, done: false, choice: null,
-        skills: [{ id: 'shield-bash', name: '방패 강타', power: 1.3 }] },
+        skills: [{ id: 'shield-bash', name: '방패 강타', power: 1.3, uses: 3, maxUses: 3 }] },
       { id: 'p3', name: '세라', job: 'healer', status: '정상', hp: 600, hpMax: 600, atk: 85, def: 70, crit: 8, done: false, choice: null,
-        skills: [{ id: 'holy-light', name: '성스러운 빛', power: 1.4 }] },
+        skills: [{ id: 'holy-light', name: '성스러운 빛', power: 1.4, uses: 2, maxUses: 2 }] },
       { id: 'p4', name: '카이', job: 'dealer', status: '정상', hp: 310, hpMax: 720, atk: 150, def: 50, crit: 25, done: false, choice: null,
-        skills: [{ id: 'backstab', name: '기습', power: 1.8 }] }
+        skills: [{ id: 'backstab', name: '기습', power: 1.8, uses: 2, maxUses: 2 }] }
     ]
   };
 
@@ -209,8 +209,12 @@
       var item = el('li', 'rs-skills__item');
       var head = el('div', 'rs-skills__head');
       head.appendChild(el('span', 'rs-skills__name', skill.name));
-      head.appendChild(el('span', 'rs-skills__power', '공격력 ' + Math.round(skill.power * 100) + '%'));
+      var tags = el('span', 'rs-skills__tags');
+      tags.appendChild(el('span', 'rs-skills__power', '공격력 ' + Math.round(skill.power * 100) + '%'));
+      tags.appendChild(el('span', 'rs-skills__uses', '남은 횟수 ' + skill.uses + ' / ' + skill.maxUses));
+      head.appendChild(tags);
       item.appendChild(head);
+      if (skill.uses <= 0) item.setAttribute('data-empty', 'true');
       item.appendChild(el('p', 'rs-skills__desc', skill.desc || ''));
       list.appendChild(item);
     });
@@ -293,7 +297,7 @@
 
   function getMenuButtons() {
     return Array.prototype.slice.call(
-      actionMenu.querySelectorAll('[role="menuitemradio"], [data-menu="confirm"]:not(:disabled)')
+      actionMenu.querySelectorAll('[role="menuitemradio"]:not(:disabled), [data-menu="confirm"]:not(:disabled)')
     );
   }
 
@@ -323,6 +327,8 @@
         return {
           key: key,
           label: a.label,
+          // 남은 횟수가 있는 스킬이 하나도 없으면 스킬 비활성
+          disabled: a.next === 'skill' && !state.player.skills.some(function (sk) { return sk.uses > 0; }),
           hasNext: a.next !== null && !singleTarget,
           select: function () {
             if (singleTarget) setSelection(key, a, { target: singleTarget });
@@ -342,7 +348,8 @@
         var key = 'skill:' + skill.id;
         return {
           key: key,
-          label: skill.name,
+          label: skill.name + ' (' + skill.uses + '/' + skill.maxUses + ')',
+          disabled: skill.uses <= 0,
           select: function () { setSelection(key, action, { skill: skill }); }
         };
       })
@@ -393,6 +400,7 @@
       button.setAttribute('aria-checked', String(!!selection && selection.key === item.key));
       button.setAttribute('data-index', String(i));
       if (item.hasNext) button.setAttribute('aria-haspopup', 'true');
+      if (item.disabled) button.disabled = true;
       actionMenu.appendChild(button);
     });
 
@@ -471,7 +479,7 @@
     var button = e.target.closest('[data-index]');
     if (!button) return;
     var item = menuItems[Number(button.getAttribute('data-index'))];
-    if (item) item.select();
+    if (item && !item.disabled) item.select();
   });
 
   actionMenu.addEventListener('keydown', function (e) {
@@ -628,7 +636,12 @@
       if (!unit || unit === state.boss) return;
       unit.hp = s.hp;
       unit.status = s.status;
+      (s.skills || []).forEach(function (sk) {
+        var skill = findSkill(unit, sk.id);
+        if (skill) skill.uses = sk.uses;
+      });
     });
+    renderSkills(state.player.skills);
   }
 
   function onTurnResult(msg) {
@@ -722,7 +735,8 @@
       if (job.defendOthers && intent.targets.length) {
         return { action: 'defend', targetId: pick(intent.targets) };
       }
-      return Math.random() < 0.5 ? { action: 'attack' } : { action: 'skill', skillId: pick(m.skills).id };
+      var usable = m.skills.filter(function (sk) { return sk.uses > 0; });
+      return Math.random() < 0.5 || !usable.length ? { action: 'attack' } : { action: 'skill', skillId: pick(usable).id };
     }
 
     // 행동 검증 (클라이언트 제한과 별개로 서버에서 반드시 재검증)
@@ -731,7 +745,11 @@
       if (choices[unit.id]) return '이미 행동을 완료했습니다.';
       var job = JOBS[unit.job];
       if (c.action === 'attack') return null;
-      if (c.action === 'skill') return findSkill(unit, c.skillId) ? null : '보유하지 않은 스킬입니다.';
+      if (c.action === 'skill') {
+        var skill = findSkill(unit, c.skillId);
+        if (!skill) return '보유하지 않은 스킬입니다.';
+        return skill.uses > 0 ? null : '남은 사용 횟수가 없습니다.';
+      }
       var target = findUnit(c.targetId);
       if (!target || target === state.boss || !isAlive(target)) return '잘못된 대상입니다.';
       if (c.action === 'defend') return (target === unit || job.defendOthers) ? null : '타인을 방어할 수 없는 직업입니다.';
@@ -774,7 +792,13 @@
       var hp = {};
       var status = {};
       var guards = {}; // targetId → 방어자 id
-      allMembers().forEach(function (m) { hp[m.id] = m.hp; status[m.id] = m.status; });
+      var uses = {};   // memberId → { skillId: 남은 횟수 }
+      allMembers().forEach(function (m) {
+        hp[m.id] = m.hp;
+        status[m.id] = m.status;
+        uses[m.id] = {};
+        m.skills.forEach(function (sk) { uses[m.id][sk.id] = sk.uses; });
+      });
 
       function push(ev) { seq += 1; ev.seq = seq; events.push(ev); }
 
@@ -784,6 +808,7 @@
         if (boss.hp <= 0) return;
         if (c.action === 'attack' || c.action === 'skill') {
           var power = c.action === 'skill' ? findSkill(m, c.skillId).power : 1;
+          if (c.action === 'skill') uses[m.id][c.skillId] -= 1;
           var crit = Math.random() * 100 < m.crit;
           var amount = Math.round(m.atk * power * rand(0.9, 1.1) * (crit ? 1.5 : 1));
           boss.hp = Math.max(0, boss.hp - amount);
@@ -838,7 +863,12 @@
         events: events,
         state: {
           boss: { hp: boss.hp, hpMax: state.boss.hpMax },
-          players: allMembers().map(function (m) { return { id: m.id, hp: hp[m.id], status: status[m.id] }; })
+          players: allMembers().map(function (m) {
+            return {
+              id: m.id, hp: hp[m.id], status: status[m.id],
+              skills: m.skills.map(function (sk) { return { id: sk.id, uses: uses[m.id][sk.id] }; })
+            };
+          })
         },
         outcome: outcome
       });
