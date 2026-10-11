@@ -77,6 +77,51 @@ src/
   - `setSelection()`: 선택 상태 저장 / `submitAction()`: 송출 지점 (추후 서버 전송)
 - 팝업 항목은 현재 단계 배열의 인덱스로만 처리 (DOM 값 직접 신뢰 안 함)
 
+## 턴 진행
+
+```
+턴 시작 (보스 행동 예고, 마감 = 시작 + 10분)
+  → 행동 선택 (선택 즉시 전원에게 공개)
+  → 턴 종료 조건: 생존자 전원 완료 또는 마감 시각 도달
+  → 결과 계산: 플레이어(파티 순서) → 보스
+  → 결과 이벤트 순차 출력 → 최종 상태 반영 → 다음 턴
+```
+
+- 미행동자: 아무것도 하지 않음 (`idle`)
+- 쓰러진 캐릭터: 행동 불가, 대상 목록에서 제외
+- 방어: 보호 대상이 받는 보스 피해 50% 감소
+- 보스 패턴(데모): 꼬리 휩쓸기(2명), 포효(전원), 내려찍기(1명, 강함) — 턴 시작 시 패턴과 대상 예고
+- 승리/패배 시 진행 종료
+- 보스 패널: 턴 수, 체력바 + 숫자, 예고 패턴, 남은 시간(1분 이하 강조)
+- 파티원/프로필: 선택한 행동 공개 (`▸ 스킬 · 강타`, `▸ 방어 → 카이`)
+
+### 메시지 형식 (서버 → 클라이언트)
+
+서버는 **데이터만** 보내고 문장은 클라이언트(`describeEvent()`, `describeChoice()`)가 생성.
+예시: `docs/examples/turn-sequence.example.json`
+
+| type | 내용 |
+|---|---|
+| `turn_start` | `turn`, `endsAt`(ISO 마감 시각), `bossIntent`(`pattern`, `name`, `telegraph`, `targets`, `all`) |
+| `action_selected` | `actor`, `choice`(`action`, `skillId?`, `targetId?`) — 선택 공개 |
+| `action_rejected` | `reason` — 서버 검증 실패 (본인에게만) |
+| `turn_result` | `turn`, `events[]`, `state`(최종 HP/상태 스냅샷), `outcome`(`null` / `victory` / `defeat`) |
+
+`events[].kind`: `attack`, `skill`, `defend`, `heal`, `idle`, `boss_action`, `damage`(`blockedBy?`), `ko`, `victory`, `defeat`
+
+### 서버 연동 시
+- `[MOCK] 가짜 서버` 블록(`mockServer`)을 실제 통신으로 교체: `submit()` → REST 요청, 수신 메시지 → `receive(msg)` 호출 (WebSocket/SSE)
+- 행동 검증·피해 계산·보스 AI·제한 시간은 서버 책임 (클라이언트 제한은 UX 용도)
+- 데모 파티원 AI는 `mockServer` 내부에만 존재 (1.5~6초 사이 75% 확률로 행동)
+
+## ⚠ 임시 기능 (추후 삭제)
+
+| 기능 | 위치 | 정식 규칙 |
+|---|---|---|
+| 플레이어(나) 행동 완료 시 즉시 턴 종료 | `raid.js` `TEMP_END_TURN_ON_SELF_DONE`, `checkTurnEnd()`의 `[TEMP]` | 생존자 전원 완료 또는 10분 경과 시 종료 |
+
+- `[TEMP]` 로 검색해 제거 (플래그를 `false`로 바꾸면 정식 규칙으로 동작)
+
 ## 직업군
 
 직업은 **고정** (게임 중 변경 불가). 정의: `raid.js`의 `JOBS`.
@@ -96,8 +141,8 @@ src/
 - 이름 앞 마름모: 대기 `◇`(보조 텍스트색) / 완료 `◆`(메인 녹색) — 채팅 시스템 메시지 장식과 통일
 - 데이터: `state.player.done`, `state.party[].done` → 컨테이너 `data-done="true|false"` (`applyDone()`)
 - 스크린리더/툴팁: `행동 완료` / `행동 대기`
-- 행동 `확인` 송출 시 플레이어 `done = true`
-- 데모: 아린·세라 완료, 도윤·카이 대기
+- 행동 `확인` 송출 → 서버가 `action_selected` 공개 → `done = true`
+- 매 턴 시작 시 초기화, 쓰러진 캐릭터는 완료 처리
 
 ## 삽입 / 보안 원칙
 
@@ -126,3 +171,4 @@ src/
 - 2026-10-11: 행동완료 표시 B안(마름모 ◇/◆) 확정, 나머지 시안 및 `?done=` 파라미터 제거
 - 2026-10-11: 직업군(힐러/딜러/탱커) 도입, 직업별 행동 제한(회복: 힐러만, 타인 방어: 탱커만), [TEST-ONLY] 직업 변경 드롭다운 추가
 - 2026-10-11: [TEST-ONLY] 직업 변경 드롭다운 삭제 (직업 고정)
+- 2026-10-11: 턴 진행 시스템(10분 제한, 조기 종료, 보스 예고, 선택 공개, 결과 이벤트 출력), 메시지 예시 JSON, [MOCK] 가짜 서버, [TEMP] 내 행동 완료 시 턴 종료

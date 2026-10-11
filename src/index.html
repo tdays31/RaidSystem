@@ -26,7 +26,14 @@
                aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" data-rs="boss-hp-bar">
             <div class="rs-bar__fill rs-bar__fill--hp" data-rs="boss-hp-fill"></div>
           </div>
-          <div class="rs-boss__state" data-rs="boss-state">대기 중</div>
+          <div class="rs-boss__meta">
+            <span class="rs-boss__state" data-rs="boss-state">대기 중</span>
+            <span class="rs-boss__hp" data-rs="boss-hp">-</span>
+          </div>
+        </div>
+        <div class="rs-boss__timer" role="timer" aria-label="남은 시간">
+          <span class="rs-label">남은 시간</span>
+          <span class="rs-boss__timer-value" data-rs="turn-timer">--:--</span>
         </div>
       </section>
 
@@ -63,6 +70,7 @@
             <div class="rs-profile__name"><span data-rs="profile-name">플레이어</span><span class="rs-done" data-rs="profile-done"></span></div>
             <div class="rs-profile__job" data-rs="profile-job">-</div>
             <div class="rs-profile__state" data-rs="profile-state">-</div>
+            <div class="rs-choice" data-rs="profile-choice"></div>
           </div>
           <div class="rs-hp">
             <span class="rs-label">HP</span>

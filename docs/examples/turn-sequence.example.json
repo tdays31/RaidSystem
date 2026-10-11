@@ -1,0 +1,63 @@
+[
+  {
+    "type": "turn_start",
+    "turn": 3,
+    "endsAt": "2026-10-11T12:10:00.000Z",
+    "bossIntent": {
+      "pattern": "tail-swipe",
+      "name": "꼬리 휩쓸기",
+      "telegraph": "꼬리를 높이 치켜듭니다…",
+      "targets": ["self", "p4"],
+      "all": false
+    }
+  },
+  {
+    "type": "action_selected",
+    "actor": "p2",
+    "choice": { "action": "defend", "targetId": "p4" }
+  },
+  {
+    "type": "action_selected",
+    "actor": "p3",
+    "choice": { "action": "heal", "targetId": "p4" }
+  },
+  {
+    "type": "action_selected",
+    "actor": "self",
+    "choice": { "action": "skill", "skillId": "power-strike" }
+  },
+  {
+    "type": "action_selected",
+    "actor": "p1",
+    "choice": { "action": "attack" }
+  },
+  {
+    "type": "action_rejected",
+    "reason": "이미 행동을 완료했습니다."
+  },
+  {
+    "type": "turn_result",
+    "turn": 3,
+    "events": [
+      { "seq": 1, "kind": "skill", "actor": "self", "target": "boss", "skillId": "power-strike", "amount": 348, "crit": true },
+      { "seq": 2, "kind": "attack", "actor": "p1", "target": "boss", "amount": 171, "crit": false },
+      { "seq": 3, "kind": "defend", "actor": "p2", "target": "p4" },
+      { "seq": 4, "kind": "heal", "actor": "p3", "target": "p4", "amount": 128 },
+      { "seq": 5, "kind": "idle", "actor": "p4" },
+      { "seq": 6, "kind": "boss_action", "actor": "boss", "pattern": "tail-swipe", "name": "꼬리 휩쓸기", "targets": ["self", "p4"] },
+      { "seq": 7, "kind": "damage", "actor": "boss", "target": "self", "amount": 112 },
+      { "seq": 8, "kind": "damage", "actor": "boss", "target": "p4", "amount": 63, "blockedBy": "p2" }
+    ],
+    "state": {
+      "boss": { "hp": 4381, "hpMax": 6000 },
+      "players": [
+        { "id": "self", "hp": 708, "status": "정상" },
+        { "id": "p1", "hp": 540, "status": "정상" },
+        { "id": "p2", "hp": 1210, "status": "정상" },
+        { "id": "p3", "hp": 600, "status": "정상" },
+        { "id": "p4", "hp": 375, "status": "정상" }
+      ]
+    },
+    "outcome": null
+  }
+]
