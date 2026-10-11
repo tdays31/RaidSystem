@@ -228,14 +228,22 @@
     return time;
   }
 
-  // variant: null(일반 채팅) | 'system' | 'turn'(턴 구분) | 'result'(행동 결과) | 'boss'(보스 행동)
+  // variant: null(일반 채팅) | 'system' | 'turn-start' | 'turn-result' | 'result'(행동 결과)
+  //          | 'guard'(방어 성공) | 'boss'(보스 행동) | 'intent'(보스 예고)
+  // message: 문자열 또는 문자열 배열(배열이면 줄 단위로 출력)
   // (하위 호환: true → 'system')
   function appendLog(author, message, variant) {
     if (variant === true) variant = 'system';
     var item = el('li', 'rs-chat-log__item' + (variant ? ' rs-chat-log__item--' + variant : ''));
     var body = el('span', 'rs-chat-log__body' + (author ? ' rs-chat-log__body--with-author' : ''));
     if (author) body.appendChild(el('span', 'rs-chat-log__author', author));
-    body.appendChild(el('span', 'rs-chat-log__text', message));
+    if (Array.isArray(message)) {
+      var text = el('span', 'rs-chat-log__text');
+      message.forEach(function (line) { text.appendChild(el('span', 'rs-chat-log__line', line)); });
+      body.appendChild(text);
+    } else {
+      body.appendChild(el('span', 'rs-chat-log__text', message));
+    }
     item.appendChild(createTimeStamp(new Date()));
     item.appendChild(body);
     chatLog.appendChild(item);
@@ -524,18 +532,24 @@
         };
       case 'boss_action':
         return { variant: 'boss', text: '⚔ ' + unitName(ev.actor) + '의 ' + ev.name + '!' };
-      case 'damage':
-        return {
-          variant: 'boss',
-          text: josaName(ev.target, '이', '가') + ' ' + ev.amount + '의 피해를 입었습니다.' +
-            (ev.blockedBy ? (ev.blockedBy === ev.target ? ' (방어로 감소)' : ' (' + josaName(ev.blockedBy, '이', '가') + ' 막아냄)') : '')
-        };
+      case 'damage': {
+        var lines = [{ variant: 'boss', text: josaName(ev.target, '이', '가') + ' ' + ev.amount + '의 피해를 입었습니다.' }];
+        if (ev.blockedBy) {
+          lines.push({
+            variant: 'guard',
+            text: ev.blockedBy === ev.target
+              ? josaName(ev.target, '이', '가') + ' 방어로 ' + ev.blocked + '의 피해를 막아냈습니다.'
+              : josaName(ev.blockedBy, '이', '가') + ' ' + unitName(ev.target) + '에게 향한 ' + ev.blocked + '의 피해를 막아냈습니다.'
+          });
+        }
+        return lines;
+      }
       case 'ko':
         return { variant: 'boss', text: josaName(ev.target, '이', '가') + ' 쓰러졌습니다.' };
       case 'victory':
-        return { variant: 'turn', text: '◆ ' + josaName(ev.target, '을', '를') + ' 쓰러뜨렸습니다! 레이드 승리 ◆' };
+        return { variant: 'turn-result', text: josaName(ev.target, '을', '를') + ' 쓰러뜨렸습니다! 레이드 승리' };
       case 'defeat':
-        return { variant: 'turn', text: '◆ 파티가 전멸했습니다. 레이드 실패 ◆' };
+        return { variant: 'turn-result', text: '파티가 전멸했습니다. 레이드 실패' };
       default:
         return null;
     }
@@ -553,10 +567,13 @@
     renderAll();
     tickTimer();
 
-    appendLog(null, msg.turn + '턴 시작', 'turn');
+    appendLog(null, msg.turn + '턴 시작', 'turn-start');
     var intent = msg.bossIntent;
     var targets = intent.all ? '전원' : intent.targets.map(unitName).join(', ');
-    appendLog(null, '⚠ ' + josaName(state.boss.id, '이', '가') + ' ' + intent.telegraph + ' (예고: ' + intent.name + ' → ' + targets + ')', 'boss');
+    appendLog(null, [
+      '⚠ ' + josaName(state.boss.id, '이', '가') + ' ' + intent.telegraph,
+      '기믹 : ' + intent.name + ' | 대상 : ' + targets
+    ], 'intent');
   }
 
   // 선택 공개 문구 (예: '도윤이 카이를 대상으로 방어를 선택했습니다.')
@@ -598,12 +615,12 @@
     state.boss.intent = null;
     renderAll();
     tickTimer();
-    appendLog(null, msg.turn + '턴 결과', 'turn');
+    appendLog(null, msg.turn + '턴 결과', 'turn-result');
 
     msg.events.forEach(function (ev, i) {
       setTimeout(function () {
-        var line = describeEvent(ev);
-        if (line) appendLog(null, line.text, line.variant);
+        var lines = describeEvent(ev);
+        if (lines) [].concat(lines).forEach(function (line) { appendLog(null, line.text, line.variant); });
         if (i === msg.events.length - 1) {
           applySnapshot(msg.state);
           if (msg.outcome) state.phase = 'ended';
@@ -777,6 +794,7 @@
           var ev = { kind: 'damage', actor: state.boss.id, target: id, amount: dmg };
           if (guards[id]) {
             ev.amount = Math.round(dmg * 0.5);
+            ev.blocked = dmg - ev.amount;
             ev.blockedBy = guards[id];
           }
           hp[id] = Math.max(0, hp[id] - ev.amount);

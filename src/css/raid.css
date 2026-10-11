@@ -148,15 +148,24 @@
   column-gap: 10px;
 }
 .rs-root .rs-chat-log__text { min-width: 0; overflow-wrap: anywhere; }
-/* 턴 구분 / 행동 결과 / 보스 행동 */
-.rs-root .rs-chat-log__item--turn { margin: 10px 0 6px; }
-.rs-root .rs-chat-log__item--turn .rs-chat-log__body {
-  padding: 3px 0; text-align: center;
+/* 턴 시작 / 턴 결과 / 행동 결과 / 방어 성공 / 보스 행동 / 보스 예고 */
+.rs-root .rs-chat-log__item--turn-start,
+.rs-root .rs-chat-log__item--turn-result { margin: 10px 0 6px; }
+.rs-root .rs-chat-log__item--turn-start .rs-chat-log__body,
+.rs-root .rs-chat-log__item--turn-result .rs-chat-log__body {
+  padding: 4px 0; text-align: center;
   font-family: var(--rs-serif); font-weight: 700; letter-spacing: .06em;
-  color: var(--rs-green-dark); background: var(--rs-sand); border-radius: 4px;
+  border-radius: 4px;
 }
+.rs-root .rs-chat-log__item--turn-start .rs-chat-log__body { color: var(--rs-yellow); background: var(--rs-green-dark); }
+.rs-root .rs-chat-log__item--turn-result .rs-chat-log__body { color: var(--rs-text); background: var(--rs-yellow); }
 .rs-root .rs-chat-log__item--result .rs-chat-log__body { color: var(--rs-text); }
+.rs-root .rs-chat-log__item--guard .rs-chat-log__body { font-weight: 600; color: var(--rs-green-dark); }
 .rs-root .rs-chat-log__item--boss .rs-chat-log__body { font-weight: 600; color: var(--rs-hp); }
+.rs-root .rs-chat-log__item--intent .rs-chat-log__body { text-align: center; color: var(--rs-hp); }
+.rs-root .rs-chat-log__item--intent .rs-chat-log__line:first-child { font-weight: 700; }
+.rs-root .rs-chat-log__item--intent .rs-chat-log__line:last-child { font-size: 13px; font-weight: 600; color: var(--rs-text-muted); }
+.rs-root .rs-chat-log__line { display: block; }
 .rs-root .rs-chat-log__author {
   white-space: nowrap;
   font-family: var(--rs-serif); font-weight: 700;

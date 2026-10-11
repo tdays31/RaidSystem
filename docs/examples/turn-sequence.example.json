@@ -46,7 +46,7 @@
       { "seq": 5, "kind": "idle", "actor": "p4" },
       { "seq": 6, "kind": "boss_action", "actor": "boss", "pattern": "tail-swipe", "name": "꼬리 휩쓸기", "targets": ["self", "p4"] },
       { "seq": 7, "kind": "damage", "actor": "boss", "target": "self", "amount": 112 },
-      { "seq": 8, "kind": "damage", "actor": "boss", "target": "p4", "amount": 63, "blockedBy": "p2" }
+      { "seq": 8, "kind": "damage", "actor": "boss", "target": "p4", "amount": 63, "blockedBy": "p2", "blocked": 63 }
     ],
     "state": {
       "boss": { "hp": 4381, "hpMax": 6000 },
