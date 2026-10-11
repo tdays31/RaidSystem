@@ -13,22 +13,30 @@
   var MAX_LOG_ITEMS = 200;
   var MAX_PARTY_SIZE = 5;
 
-  // 행동 목록 (추후 각 항목에 하위 선택지 추가 예정)
+  // 행동 목록
+  // - next: 선택 후 다음 단계 (null: 즉시 확정, 'skill': 스킬 선택, 'target': 대상 선택)
   var ACTIONS = [
-    { id: 'attack', label: '공격' },
-    { id: 'skill', label: '스킬' },
-    { id: 'defend', label: '방어' },
-    { id: 'heal', label: '회복' }
+    { id: 'attack', label: '공격', next: null },
+    { id: 'skill', label: '스킬', next: 'skill' },
+    { id: 'defend', label: '방어', next: 'target' },
+    { id: 'heal', label: '회복', next: 'target' }
   ];
 
   // 예시 데이터 (추후 서버 연동 시 교체)
   var state = {
-    player: { name: '플레이어', job: '전사', status: '정상', hp: 820, hpMax: 1000, atk: 145, def: 98, crit: 12 },
+    player: {
+      id: 'self', name: '플레이어', job: '전사', status: '정상', hp: 820, hpMax: 1000, atk: 145, def: 98, crit: 12,
+      skills: [
+        { id: 'power-strike', name: '강타' },
+        { id: 'war-cry', name: '전투의 함성' },
+        { id: 'whirlwind', name: '회오리 베기' }
+      ]
+    },
     party: [
-      { name: '아린', job: '마법사', status: '정상', hp: 540, hpMax: 640 },
-      { name: '도윤', job: '성기사', status: '방어 중', hp: 1210, hpMax: 1300 },
-      { name: '세라', job: '사제', status: '정상', hp: 600, hpMax: 600 },
-      { name: '카이', job: '도적', status: '출혈', hp: 310, hpMax: 720 }
+      { id: 'p1', name: '아린', job: '마법사', status: '정상', hp: 540, hpMax: 640 },
+      { id: 'p2', name: '도윤', job: '성기사', status: '방어 중', hp: 1210, hpMax: 1300 },
+      { id: 'p3', name: '세라', job: '사제', status: '정상', hp: 600, hpMax: 600 },
+      { id: 'p4', name: '카이', job: '도적', status: '출혈', hp: 310, hpMax: 720 }
     ]
   };
 
@@ -101,32 +109,114 @@
   }
 
   // ===== 행동 팝업 =====
+  // 단계: main(행동) → skill(스킬 목록) | target(대상 목록) → 확정
+  // 항목은 현재 단계의 menuItems 배열 인덱스로만 처리 (DOM 값 직접 신뢰 안 함)
   var actionToggle = $('action-toggle');
   var actionMenu = $('action-menu');
+  var menuItems = [];
+  var pendingAction = null;
 
-  function getMenuItems() {
+  function getMenuButtons() {
     return Array.prototype.slice.call(actionMenu.querySelectorAll('[role="menuitem"]'));
+  }
+
+  function focusFirstItem() {
+    var buttons = getMenuButtons();
+    if (buttons.length) buttons[0].focus();
+  }
+
+  function buildMainView() {
+    return {
+      title: null,
+      items: ACTIONS.map(function (a) {
+        return { label: a.label, select: function () { selectAction(a); } };
+      })
+    };
+  }
+
+  function buildSkillView(action) {
+    return {
+      title: '스킬 선택',
+      items: state.player.skills.slice(0, 3).map(function (skill) {
+        return {
+          label: skill.name,
+          select: function () { confirmAction(action, { skill: skill }); }
+        };
+      })
+    };
+  }
+
+  function buildTargetView(action) {
+    var targets = [{ id: state.player.id, name: state.player.name, self: true }]
+      .concat(state.party.slice(0, MAX_PARTY_SIZE).map(function (m) {
+        return { id: m.id, name: m.name, self: false };
+      }));
+    return {
+      title: action.label + ' 대상',
+      items: targets.map(function (t) {
+        return {
+          label: t.self ? t.name + ' (나)' : t.name,
+          select: function () { confirmAction(action, { target: t }); }
+        };
+      })
+    };
+  }
+
+  function renderMenu(view) {
+    menuItems = view.items;
+    actionMenu.replaceChildren();
+
+    if (view.title) {
+      var head = el('div', 'rs-action__head');
+      var back = el('button', 'rs-action__back', '← 뒤로');
+      back.type = 'button';
+      back.setAttribute('data-menu', 'back');
+      head.appendChild(back);
+      head.appendChild(el('span', 'rs-action__title', view.title));
+      actionMenu.appendChild(head);
+    }
+
+    menuItems.forEach(function (item, i) {
+      var button = el('button', 'rs-action__item', item.label);
+      button.type = 'button';
+      button.setAttribute('role', 'menuitem');
+      button.setAttribute('data-index', String(i));
+      actionMenu.appendChild(button);
+    });
+  }
+
+  function showMainMenu() {
+    pendingAction = null;
+    renderMenu(buildMainView());
+    focusFirstItem();
   }
 
   function openActionMenu() {
     actionMenu.hidden = false;
     actionToggle.setAttribute('aria-expanded', 'true');
-    var items = getMenuItems();
-    if (items.length) items[0].focus();
+    showMainMenu();
   }
 
   function closeActionMenu(restoreFocus) {
     if (actionMenu.hidden) return;
     actionMenu.hidden = true;
+    pendingAction = null;
     actionToggle.setAttribute('aria-expanded', 'false');
     if (restoreFocus) actionToggle.focus();
   }
 
-  function findAction(id) {
-    for (var i = 0; i < ACTIONS.length; i++) {
-      if (ACTIONS[i].id === id) return ACTIONS[i];
+  function selectAction(action) {
+    if (action.next === 'skill') {
+      pendingAction = action;
+      renderMenu(buildSkillView(action));
+      focusFirstItem();
+    } else if (action.next === 'target') {
+      pendingAction = action;
+      renderMenu(buildTargetView(action));
+      focusFirstItem();
+    } else {
+      confirmAction(action, {});
     }
-    return null;
   }
 
   // 한글 조사 선택: 마지막 글자 받침 유무로 결정 (예: josa('공격', '을', '를'))
@@ -136,20 +226,21 @@
     return word + (hasFinal ? withFinal : withoutFinal);
   }
 
-  function onActionSelect(action) {
-    // TODO: 행동별 하위 선택 팝업 연결
-    appendLog(null, josa(state.player.name, '이', '가') + ' ' + josa(action.label, '을', '를') + ' 선택했습니다.', true);
-  }
+  // 행동 확정 (추후 서버 전송 지점)
+  function confirmAction(action, detail) {
+    closeActionMenu(true);
+    var actor = josa(state.player.name, '이', '가');
+    var message;
 
-  function renderActionMenu() {
-    actionMenu.replaceChildren();
-    ACTIONS.forEach(function (a) {
-      var item = el('button', 'rs-action__item', a.label);
-      item.type = 'button';
-      item.setAttribute('role', 'menuitem');
-      item.setAttribute('data-action', a.id);
-      actionMenu.appendChild(item);
-    });
+    if (detail.skill) {
+      message = actor + ' 스킬 ' + josa(detail.skill.name, '을', '를') + ' 선택했습니다.';
+    } else if (detail.target) {
+      var targetName = detail.target.self ? '자신' : detail.target.name;
+      message = actor + ' ' + josa(targetName, '을', '를') + ' 대상으로 ' + josa(action.label, '을', '를') + ' 선택했습니다.';
+    } else {
+      message = actor + ' ' + josa(action.label, '을', '를') + ' 선택했습니다.';
+    }
+    appendLog(null, message, true);
   }
 
   actionToggle.addEventListener('click', function () {
@@ -158,34 +249,38 @@
   });
 
   actionMenu.addEventListener('click', function (e) {
-    var target = e.target.closest('[data-action]');
-    if (!target) return;
-    var action = findAction(target.getAttribute('data-action'));
-    if (!action) return;
-    closeActionMenu(true);
-    onActionSelect(action);
+    if (e.target.closest('[data-menu="back"]')) {
+      showMainMenu();
+      return;
+    }
+    var button = e.target.closest('[data-index]');
+    if (!button) return;
+    var item = menuItems[Number(button.getAttribute('data-index'))];
+    if (item) item.select();
   });
 
   actionMenu.addEventListener('keydown', function (e) {
-    var items = getMenuItems();
-    var idx = items.indexOf(document.activeElement);
+    var buttons = getMenuButtons();
+    var idx = buttons.indexOf(document.activeElement);
     if (e.key === 'Escape') {
       e.preventDefault();
-      closeActionMenu(true);
-    } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      if (pendingAction) showMainMenu();
+      else closeActionMenu(true);
+    } else if (e.key === 'ArrowDown') {
       e.preventDefault();
-      items[(idx + 1) % items.length].focus();
-    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      buttons[(idx + 1) % buttons.length].focus();
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      items[(idx - 1 + items.length) % items.length].focus();
+      buttons[(idx - 1 + buttons.length) % buttons.length].focus();
     } else if (e.key === 'Tab') {
       closeActionMenu(false);
     }
   });
 
-  // 팝업 바깥 클릭 시 닫기
+  // 팝업 바깥 클릭 시 닫기 (메뉴 재렌더로 분리된 노드는 무시)
   document.addEventListener('click', function (e) {
-    if (!actionMenu.hidden && !actionMenu.contains(e.target) && !actionToggle.contains(e.target)) {
+    if (actionMenu.hidden || !e.target.isConnected) return;
+    if (!actionMenu.contains(e.target) && !actionToggle.contains(e.target)) {
       closeActionMenu(false);
     }
   });
@@ -201,6 +296,5 @@
 
   renderProfile(state.player);
   renderParty(state.party);
-  renderActionMenu();
   appendLog(null, '레이드에 입장했습니다.', true);
 })();
