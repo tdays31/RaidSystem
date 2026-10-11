@@ -1,4 +1,5 @@
 /* 모든 스타일은 .rs-root 하위로 한정 (호스트 페이지 스타일 충돌 방지) */
+/* 디자인: Parchment (판타지 RPG 양피지 톤) */
 .rs-root {
   /* 팔레트 */
   --rs-green: #3c9261;
@@ -6,18 +7,24 @@
   --rs-lime: #b8ca6f;
   --rs-yellow: #f9e282;
   --rs-white: #ffffff;
+  /* 양피지 톤 */
+  --rs-bg: #e9dfbf;
+  --rs-paper: #fffbef;
+  --rs-sand: #f1e9cf;
   /* 가독성용 파생색 */
   --rs-green-dark: #2b6b47;
-  --rs-text: #1a2b20;
-  --rs-text-muted: #3d5244;
+  --rs-text: #2b2a1f;
+  --rs-text-muted: #6b5f3c;
   --rs-text-on-dark: #ffffff;
-  --rs-hp: #b8322a;
-  --rs-radius: 10px;
+  --rs-hp: #a12d26;
+  --rs-radius: 6px;
   --rs-gap: 10px;
+  --rs-serif: "Noto Serif KR", "Nanum Myeongjo", Georgia, serif;
 
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  /* 사이드(플레이어) 폭: 메인 2 : 사이드 0.86 (기존 대비 약 10% 축소) */
+  grid-template-columns: minmax(0, 2fr) minmax(252px, .86fr);
   gap: var(--rs-gap);
   width: 100%;
   height: 100vh;
@@ -25,7 +32,7 @@
   margin: 0;
   padding: 28px max(16px, calc((100% - 1080px) / 2)) 20px;
   overflow: hidden;
-  background: var(--rs-white);
+  background: var(--rs-bg);
   color: var(--rs-text);
   font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
   font-size: 15px;
@@ -35,7 +42,11 @@
 
 /* 공통 패널: 테두리 없이 배경색으로만 영역 구분 */
 .rs-root .rs-panel { padding: 14px 18px; border: 0; border-radius: 0; }
-.rs-root .rs-panel__title { margin: 0 0 8px; font-size: 15px; font-weight: 500; color: var(--rs-text-muted); }
+.rs-root .rs-panel__title {
+  margin: 0 0 8px;
+  font-family: var(--rs-serif); font-size: 15px; font-weight: 500;
+  color: var(--rs-text-muted);
+}
 .rs-root .rs-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; }
 .rs-root .rs-sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -43,51 +54,55 @@
 }
 
 /* 레이아웃 */
+.rs-root .rs-main,
+.rs-root .rs-side {
+  min-width: 0;
+  min-height: 0;
+  background: var(--rs-paper);
+  border-radius: var(--rs-radius);
+  box-shadow: 0 2px 0 rgba(107, 95, 60, .25), 0 10px 24px rgba(60, 45, 10, .12);
+}
 .rs-root .rs-main {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  min-width: 0;
-  min-height: 0;
-  border-radius: var(--rs-radius);
   overflow: hidden;
 }
 .rs-root .rs-side {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  min-width: 0;
-  min-height: 0;
   padding: 18px;
-  background: var(--rs-lime);
-  border-radius: var(--rs-radius);
 }
 .rs-root .rs-controls {
   display: grid;
   grid-template-columns: minmax(140px, 1fr) minmax(0, 3fr);
   gap: var(--rs-gap);
   padding: 10px;
-  background: var(--rs-lime);
+  background: var(--rs-sand);
 }
 
 /* 보스 상태 */
 .rs-root .rs-boss {
   display: flex; align-items: center; gap: 16px;
-  background: var(--rs-leaf);
+  background: var(--rs-green-dark);
   color: var(--rs-text-on-dark);
 }
 .rs-root .rs-boss__turn {
   display: flex; flex-direction: column; align-items: center;
   min-width: 72px; padding: 6px 10px;
-  background: var(--rs-yellow); color: var(--rs-text);
+  background: var(--rs-paper); color: var(--rs-green-dark);
   border-radius: 6px;
 }
-.rs-root .rs-boss__turn-value { font-size: 24px; font-weight: 800; line-height: 1.1; }
+.rs-root .rs-boss__turn-value { font-family: var(--rs-serif); font-size: 24px; font-weight: 800; line-height: 1.1; }
 .rs-root .rs-boss__info { flex: 1; min-width: 0; }
-.rs-root .rs-boss__name { font-size: 18px; font-weight: 800; }
+.rs-root .rs-boss__name {
+  font-family: var(--rs-serif); font-size: 18px; font-weight: 800;
+  letter-spacing: .02em; color: var(--rs-yellow);
+}
 .rs-root .rs-boss__state { font-size: 13px; font-weight: 600; }
 .rs-root .rs-bar {
   height: 10px; margin: 6px 0;
-  background: rgba(255, 255, 255, .2);
+  background: rgba(0, 0, 0, .25);
   border-radius: 999px; overflow: hidden;
 }
 .rs-root .rs-bar__fill { height: 100%; width: 100%; transition: width .3s; }
@@ -97,16 +112,22 @@
 .rs-root .rs-chat-log {
   min-height: 0;
   overflow-y: auto;
-  background: var(--rs-white);
+  background: var(--rs-paper);
 }
 .rs-root .rs-chat-log__list { list-style: none; margin: 0; padding: 0; }
 .rs-root .rs-chat-log__item { padding: 4px 0; word-break: break-word; }
 .rs-root .rs-chat-log__item--system {
+  margin: 4px 0 12px; padding: 0;
+  text-align: center; font-style: italic;
   color: var(--rs-text-muted);
-  border-left: 3px solid var(--rs-green);
-  padding: 0 0 0 8px; margin: 4px 0 8px;
 }
-.rs-root .rs-chat-log__author { font-weight: 700; color: var(--rs-green-dark); margin-right: 6px; }
+.rs-root .rs-chat-log__item--system::before,
+.rs-root .rs-chat-log__item--system::after { content: " ◆ "; color: var(--rs-lime); }
+.rs-root .rs-chat-log__author {
+  margin-right: 6px;
+  font-family: var(--rs-serif); font-weight: 700;
+  color: var(--rs-green-dark);
+}
 
 /* 행동 선택 / 채팅 입력 */
 .rs-root .rs-action,
@@ -115,8 +136,8 @@
 .rs-root .rs-chat-input__text {
   flex: 1; min-width: 0; height: 40px; padding: 0 10px;
   font: inherit; color: var(--rs-text);
-  background: var(--rs-white);
-  border: 0; border-radius: 6px;
+  background: var(--rs-paper);
+  border: 0; border-radius: 4px;
 }
 .rs-root .rs-action__select:focus,
 .rs-root .rs-chat-input__text:focus,
@@ -124,9 +145,9 @@
 .rs-root .rs-btn {
   height: 40px; padding: 0 18px;
   font: inherit; font-weight: 700;
-  color: var(--rs-text-on-dark);
+  color: var(--rs-yellow);
   background: var(--rs-green-dark);
-  border: 0; border-radius: 6px; cursor: pointer;
+  border: 0; border-radius: 4px; cursor: pointer;
 }
 .rs-root .rs-btn:hover { background: var(--rs-green); }
 
@@ -135,10 +156,11 @@
 .rs-root .rs-profile__head { display: flex; gap: 12px; align-items: center; }
 .rs-root .rs-profile__avatar {
   width: 56px; height: 56px; flex: none; border-radius: 50%;
-  background: var(--rs-green);
+  background: var(--rs-lime);
+  box-shadow: 0 0 0 3px var(--rs-paper), 0 0 0 5px var(--rs-green-dark);
 }
 .rs-root .rs-profile__body { flex: 1; min-width: 0; }
-.rs-root .rs-profile__name { font-size: 18px; font-weight: 700; }
+.rs-root .rs-profile__name { font-family: var(--rs-serif); font-size: 18px; font-weight: 700; }
 .rs-root .rs-profile__job { font-size: 13px; font-weight: 600; color: var(--rs-text); }
 .rs-root .rs-profile__state { font-size: 13px; color: var(--rs-text-muted); }
 
@@ -154,10 +176,14 @@
 }
 .rs-root .rs-stats__item {
   padding: 6px 0; text-align: center;
-  background: rgba(255, 255, 255, .55); border-radius: 4px;
+  background: var(--rs-sand); border-radius: 4px;
 }
 .rs-root .rs-stats dt { font-size: 12px; color: var(--rs-text-muted); }
-.rs-root .rs-stats dd { margin: 0; font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.rs-root .rs-stats dd {
+  margin: 0;
+  font-family: var(--rs-serif); font-size: 16px; font-weight: 800;
+  color: var(--rs-green-dark); font-variant-numeric: tabular-nums;
+}
 
 /* 파티원 */
 .rs-root .rs-party { flex: 1; min-height: 0; overflow-y: auto; padding: 0; background: transparent; }
@@ -165,9 +191,9 @@
 .rs-root .rs-party__item {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, .55); border-radius: 4px;
+  background: var(--rs-sand); border-radius: 4px;
 }
-.rs-root .rs-party__name { font-weight: 700; }
+.rs-root .rs-party__name { font-family: var(--rs-serif); font-weight: 700; }
 .rs-root .rs-party__meta { font-size: 12px; color: var(--rs-text-muted); }
 .rs-root .rs-party__hp { font-weight: 800; color: var(--rs-hp); font-variant-numeric: tabular-nums; }
 
