@@ -296,7 +296,7 @@
 }
 .rs-root .rs-profile__body { flex: 1; min-width: 0; }
 .rs-root .rs-profile__name { display: flex; align-items: center; gap: 6px; font-family: var(--rs-serif); font-size: 18px; font-weight: 700; }
-.rs-root .rs-profile__job { font-size: 13px; font-weight: 600; color: var(--rs-text); }
+.rs-root .rs-profile__meta { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
 .rs-root .rs-profile__state { font-size: 13px; color: var(--rs-text-muted); }
 
 /* HP 숫자 표시 */
@@ -337,19 +337,11 @@
   opacity: .7;
 }
 /* 직업색: 태그 글자 / 태그 배경 */
-.rs-root .rs-party__item[data-job="healer"] { --rs-job: #3c9261; --rs-job-tint: #dfeccf; }
-.rs-root .rs-party__item[data-job="dealer"] { --rs-job: #b5652e; --rs-job-tint: #f3dfcb; }
-.rs-root .rs-party__item[data-job="tank"] { --rs-job: #5b6b85; --rs-job-tint: #dfe3ea; }
 .rs-root .rs-party__info { min-width: 0; }
 .rs-root .rs-party__name { display: flex; align-items: center; gap: 6px; font-family: var(--rs-serif); font-weight: 700; }
 .rs-root .rs-party__meta {
   display: flex; align-items: center; gap: 6px; min-width: 0;
   margin-top: 2px; font-size: 12px; color: var(--rs-text-muted);
-}
-.rs-root .rs-party__job {
-  flex: none; padding: 0 6px;
-  font-size: 11px; font-weight: 700; line-height: 17px;
-  color: var(--rs-job); background: var(--rs-job-tint); border-radius: 999px;
 }
 .rs-root .rs-party__status { flex: none; }
 .rs-root .rs-party__meta .rs-choice { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -377,6 +369,17 @@
   font-variant-numeric: tabular-nums;
 }
 .rs-root .rs-skills__desc { margin: 2px 0 0; font-size: 13px; line-height: 1.5; color: var(--rs-text-muted); word-break: keep-all; }
+
+/* 직업 태그 (프로필/파티원 공통): data-job 으로 직업색 지정 */
+.rs-root [data-job="healer"] { --rs-job: #3c9261; --rs-job-tint: #dfeccf; }
+.rs-root [data-job="dealer"] { --rs-job: #b5652e; --rs-job-tint: #f3dfcb; }
+.rs-root [data-job="tank"] { --rs-job: #5b6b85; --rs-job-tint: #dfe3ea; }
+.rs-root .rs-job-tag {
+  flex: none; padding: 0 6px;
+  font-size: 11px; font-weight: 700; line-height: 17px;
+  color: var(--rs-job, var(--rs-text-muted)); background: var(--rs-job-tint, var(--rs-sand)); border-radius: 999px;
+}
+.rs-root .rs-profile .rs-job-tag { font-size: 12px; line-height: 19px; padding: 0 8px; }
 
 /* 공개된 행동 선택 */
 .rs-root .rs-choice { font-size: 12px; font-weight: 700; color: var(--rs-green-dark); }

@@ -161,6 +161,7 @@
     setText('profile-name', p.name);
     applyDone($('profile'), $('profile-done'), p.done);
     setText('profile-job', jobLabel(p.job));
+    $('profile-job').setAttribute('data-job', p.job);
     setText('profile-state', p.status);
     setText('profile-choice', p.choice ? '▸ ' + choiceLabel(p) : '');
     setText('profile-hp', p.hp);
@@ -188,7 +189,7 @@
       info.appendChild(name);
 
       var meta = el('div', 'rs-party__meta');
-      meta.appendChild(el('span', 'rs-party__job', jobLabel(m.job)));
+      meta.appendChild(el('span', 'rs-job-tag', jobLabel(m.job)));
       meta.appendChild(el('span', 'rs-party__status', m.status));
       if (m.choice) meta.appendChild(el('span', 'rs-choice', '▸ ' + choiceLabel(m)));
       info.appendChild(meta);
