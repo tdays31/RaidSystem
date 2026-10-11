@@ -12,11 +12,6 @@
   var MAX_MESSAGE_LENGTH = 200;
   var MAX_LOG_ITEMS = 200;
   var MAX_PARTY_SIZE = 5;
-
-  // [시안] 파티원 리스트 스타일 (?party=a|b|c, 확정 후 제거 예정)
-  var PARTY_STYLES = ['a', 'b', 'c'];
-  var requestedParty = new URLSearchParams(window.location.search).get('party');
-  if (PARTY_STYLES.indexOf(requestedParty) !== -1) root.setAttribute('data-party', requestedParty);
   var TURN_LIMIT_MS = 10 * 60 * 1000; // 턴 제한 시간 10분
   var EVENT_INTERVAL_MS = 450;        // 턴 결과 이벤트 출력 간격
 
@@ -184,10 +179,6 @@
       var item = el('li', 'rs-party__item');
       item.setAttribute('data-job', m.job);
 
-      var badge = el('span', 'rs-party__badge', jobLabel(m.job).charAt(0));
-      badge.setAttribute('aria-hidden', 'true');
-      item.appendChild(badge);
-
       var info = el('div', 'rs-party__info');
       var name = el('div', 'rs-party__name');
       var marker = el('span', 'rs-done');
@@ -203,10 +194,7 @@
       info.appendChild(meta);
       item.appendChild(info);
 
-      var hp = el('div', 'rs-party__hp');
-      hp.appendChild(el('span', 'rs-party__hp-label', 'HP'));
-      hp.appendChild(el('span', 'rs-party__hp-value', m.hp + ' / ' + m.hpMax));
-      item.appendChild(hp);
+      item.appendChild(el('div', 'rs-party__hp', m.hp + ' / ' + m.hpMax));
       list.appendChild(item);
     });
 
