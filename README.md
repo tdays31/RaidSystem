@@ -11,6 +11,7 @@ src/
 ├─ index.html     # 레이아웃 (데모/삽입용 마크업)
 ├─ css/page.css   # 데모 페이지 전용 body 리셋 (삽입 시 제외)
 ├─ css/raid.css   # 스타일 (.rs-root 하위로 스코프 한정)
+├─ css/themes/    # 테마 시안 (soft / night / parchment)
 └─ js/raid.js     # UI 바인딩 (IIFE, 전역 오염 없음)
 ```
 
@@ -47,6 +48,21 @@ src/
 
 색상은 `.rs-root`의 CSS 변수(`--rs-*`)로 관리.
 
+## 테마 시안
+
+기본 구조는 동일, `.rs-root[data-theme="..."]`로 덮어쓰기.
+
+| 테마 | 파일 | 특징 |
+|---|---|---|
+| (기본) | - | 라임 사이드, 잎새색 보스 헤더 |
+| `soft` | `css/themes/soft.css` | 밝은 톤, 그림자 카드, 그라데이션 헤더, 말풍선 채팅, 알약형 입력 |
+| `night` | `css/themes/night.css` | 다크 그린 배경, 노랑 포인트/글로우, 게임 UI 느낌 |
+| `parchment` | `css/themes/parchment.css` | 양피지 톤, 세리프 제목, 판타지 RPG 느낌 |
+
+- 미리보기: `index.html?theme=soft` 형식
+- 적용: 호스트에서 `#raid-system`에 `data-theme` 속성 지정 또는 쿼리 파라미터
+- 쿼리 값은 허용 목록(`THEMES`)에 있는 값만 적용
+
 ## 삽입 / 보안 원칙
 
 - 삽입 시 `#raid-system` 블록 + `raid.css` + `raid.js`만 사용
@@ -62,3 +78,4 @@ src/
 - 2026-10-11: 기본 레이아웃 구성 (보스 상태 / 채팅 출력 / 행동 선택 / 채팅 입력 / 프로필 / 파티원)
 - 2026-10-11: 팔레트 변경, 테두리 제거, 전체 화면, 채팅창 고정, 직업/능력치/숫자 HP, 예시 파티원 4명
 - 2026-10-11: 시안 반영 (중앙 카드형 레이아웃, 사이드 단일 배경, HP 적색 숫자, 시스템 메시지 강조선)
+- 2026-10-11: 테마 시안 3종 추가 (soft / night / parchment), 루트 배경 전체 폭 적용

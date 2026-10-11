@@ -20,11 +20,10 @@
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
   gap: var(--rs-gap);
   width: 100%;
-  max-width: 1080px;
   height: 100vh;
   height: 100dvh;
-  margin: 0 auto;
-  padding: 28px 0 20px;
+  margin: 0;
+  padding: 28px max(16px, calc((100% - 1080px) / 2)) 20px;
   overflow: hidden;
   background: var(--rs-white);
   color: var(--rs-text);

@@ -12,6 +12,13 @@
   var MAX_MESSAGE_LENGTH = 200;
   var MAX_LOG_ITEMS = 200;
   var MAX_PARTY_SIZE = 5;
+  var THEMES = ['soft', 'night', 'parchment'];
+
+  // 테마: 허용 목록에 있는 값만 적용 (?theme=xxx)
+  var requestedTheme = new URLSearchParams(window.location.search).get('theme');
+  if (THEMES.indexOf(requestedTheme) !== -1) {
+    root.setAttribute('data-theme', requestedTheme);
+  }
 
   // 예시 데이터 (추후 서버 연동 시 교체)
   var state = {

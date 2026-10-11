@@ -1,0 +1,43 @@
+/* 시안 C: Parchment - 판타지 RPG 양피지 톤, 세리프 제목 */
+.rs-root[data-theme="parchment"] {
+  --rs-radius: 6px;
+  --rs-paper: #fffbef;
+  --rs-sand: #f1e9cf;
+  --rs-text: #2b2a1f;
+  --rs-text-muted: #6b5f3c;
+  --rs-hp: #a12d26;
+  --rs-serif: "Noto Serif KR", "Nanum Myeongjo", Georgia, serif;
+  background: #e9dfbf;
+}
+.rs-root[data-theme="parchment"] .rs-main,
+.rs-root[data-theme="parchment"] .rs-side {
+  background: var(--rs-paper);
+  box-shadow: 0 2px 0 rgba(107, 95, 60, .25), 0 10px 24px rgba(60, 45, 10, .12);
+}
+.rs-root[data-theme="parchment"] .rs-boss { background: var(--rs-green-dark); }
+.rs-root[data-theme="parchment"] .rs-boss__name { font-family: var(--rs-serif); color: var(--rs-yellow); letter-spacing: .02em; }
+.rs-root[data-theme="parchment"] .rs-boss__turn { background: var(--rs-paper); color: var(--rs-green-dark); }
+.rs-root[data-theme="parchment"] .rs-boss__turn-value { font-family: var(--rs-serif); }
+.rs-root[data-theme="parchment"] .rs-bar { background: rgba(0, 0, 0, .25); }
+.rs-root[data-theme="parchment"] .rs-chat-log { background: var(--rs-paper); }
+.rs-root[data-theme="parchment"] .rs-chat-log__author { font-family: var(--rs-serif); }
+.rs-root[data-theme="parchment"] .rs-chat-log__item--system {
+  border: 0; padding: 0; margin: 4px 0 12px;
+  text-align: center; font-style: italic; color: var(--rs-text-muted);
+}
+.rs-root[data-theme="parchment"] .rs-chat-log__item--system::before,
+.rs-root[data-theme="parchment"] .rs-chat-log__item--system::after { content: " ◆ "; color: var(--rs-lime); }
+.rs-root[data-theme="parchment"] .rs-controls { background: var(--rs-sand); }
+.rs-root[data-theme="parchment"] .rs-action__select,
+.rs-root[data-theme="parchment"] .rs-chat-input__text { background: var(--rs-paper); border-radius: 4px; }
+.rs-root[data-theme="parchment"] .rs-btn { background: var(--rs-green-dark); color: var(--rs-yellow); border-radius: 4px; }
+.rs-root[data-theme="parchment"] .rs-profile__name,
+.rs-root[data-theme="parchment"] .rs-party__name,
+.rs-root[data-theme="parchment"] .rs-panel__title { font-family: var(--rs-serif); }
+.rs-root[data-theme="parchment"] .rs-profile__avatar {
+  background: var(--rs-lime);
+  box-shadow: 0 0 0 3px var(--rs-paper), 0 0 0 5px var(--rs-green-dark);
+}
+.rs-root[data-theme="parchment"] .rs-stats__item,
+.rs-root[data-theme="parchment"] .rs-party__item { background: var(--rs-sand); }
+.rs-root[data-theme="parchment"] .rs-stats dd { font-family: var(--rs-serif); color: var(--rs-green-dark); }
