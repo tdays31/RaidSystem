@@ -159,6 +159,53 @@
 }
 .rs-root .rs-chat-log__item--turn-start .rs-chat-log__body { color: var(--rs-yellow); background: var(--rs-green-dark); }
 .rs-root .rs-chat-log__item--turn-result .rs-chat-log__body { color: var(--rs-text); background: var(--rs-yellow); }
+/* ===== [시안] 턴 띠 A/B/C (확정 후 정리) ===== */
+/* A: 배경 없이 세리프 글자 + 양옆 장식선 */
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-start .rs-chat-log__body,
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-result .rs-chat-log__body {
+  display: flex; align-items: center; gap: 12px;
+  padding: 2px 0; background: transparent; border-radius: 0;
+}
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-start .rs-chat-log__body::before,
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-start .rs-chat-log__body::after,
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-result .rs-chat-log__body::before,
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-result .rs-chat-log__body::after {
+  content: ""; flex: 1; height: 1px;
+}
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-start .rs-chat-log__body { color: var(--rs-green-dark); font-size: 15px; }
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-start .rs-chat-log__body::before { background: linear-gradient(90deg, transparent, var(--rs-green)); }
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-start .rs-chat-log__body::after { background: linear-gradient(90deg, var(--rs-green), transparent); }
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-result .rs-chat-log__body { color: var(--rs-text-muted); font-size: 14px; }
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-result .rs-chat-log__body::before { background: linear-gradient(90deg, transparent, #c9b98a); }
+.rs-root[data-banner="a"] .rs-chat-log__item--turn-result .rs-chat-log__body::after { background: linear-gradient(90deg, #c9b98a, transparent); }
+
+/* B: 가운데 작은 알약 태그 */
+.rs-root[data-banner="b"] .rs-chat-log__item--turn-start .rs-chat-log__body,
+.rs-root[data-banner="b"] .rs-chat-log__item--turn-result .rs-chat-log__body {
+  justify-self: center; padding: 2px 16px;
+  font-size: 13px; border-radius: 999px;
+}
+.rs-root[data-banner="b"] .rs-chat-log__item--turn-start .rs-chat-log__body { color: var(--rs-green-dark); background: #e2eac3; }
+.rs-root[data-banner="b"] .rs-chat-log__item--turn-start .rs-chat-log__body::before { content: "⚔ "; }
+.rs-root[data-banner="b"] .rs-chat-log__item--turn-result .rs-chat-log__body { color: var(--rs-text-muted); background: var(--rs-sand); }
+.rs-root[data-banner="b"] .rs-chat-log__item--turn-result .rs-chat-log__body::before { content: "✦ "; }
+
+/* C: 연한 톤 띠 + 아이콘 (시작: 연녹 / 결과: 연모래) */
+.rs-root[data-banner="c"] .rs-chat-log__item--turn-start .rs-chat-log__body,
+.rs-root[data-banner="c"] .rs-chat-log__item--turn-result .rs-chat-log__body { padding: 5px 0; font-size: 14px; }
+.rs-root[data-banner="c"] .rs-chat-log__item--turn-start .rs-chat-log__body {
+  color: var(--rs-green-dark);
+  background: linear-gradient(90deg, transparent, #e2eac3 20%, #e2eac3 80%, transparent);
+}
+.rs-root[data-banner="c"] .rs-chat-log__item--turn-start .rs-chat-log__body::before { content: "◆ "; color: var(--rs-green); }
+.rs-root[data-banner="c"] .rs-chat-log__item--turn-start .rs-chat-log__body::after { content: " ◆"; color: var(--rs-green); }
+.rs-root[data-banner="c"] .rs-chat-log__item--turn-result .rs-chat-log__body {
+  color: #5a4f2e;
+  background: linear-gradient(90deg, transparent, #f3e7bd 20%, #f3e7bd 80%, transparent);
+}
+.rs-root[data-banner="c"] .rs-chat-log__item--turn-result .rs-chat-log__body::before { content: "✦ "; color: #b39a4a; }
+.rs-root[data-banner="c"] .rs-chat-log__item--turn-result .rs-chat-log__body::after { content: " ✦"; color: #b39a4a; }
+
 .rs-root .rs-chat-log__item--result .rs-chat-log__body { color: var(--rs-text); }
 .rs-root .rs-chat-log__item--guard .rs-chat-log__body { font-weight: 600; color: var(--rs-green-dark); }
 .rs-root .rs-chat-log__item--boss .rs-chat-log__body { font-weight: 600; color: var(--rs-hp); }
