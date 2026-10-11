@@ -13,11 +13,6 @@
   var MAX_LOG_ITEMS = 200;
   var MAX_PARTY_SIZE = 5;
 
-  // [시안] 행동완료 표시 스타일 (?done=a|b|c, 확정 후 제거 예정)
-  var DONE_STYLES = ['a', 'b', 'c'];
-  var requestedDoneStyle = new URLSearchParams(window.location.search).get('done');
-  root.setAttribute('data-done-style', DONE_STYLES.indexOf(requestedDoneStyle) !== -1 ? requestedDoneStyle : 'a');
-
   // 행동 목록
   // - next: 선택 후 다음 단계 (null: 즉시 확정, 'skill': 스킬 선택, 'target': 대상 선택)
   var ACTIONS = [

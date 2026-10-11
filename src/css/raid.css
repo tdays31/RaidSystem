@@ -225,7 +225,6 @@
   box-shadow: 0 0 0 3px var(--rs-paper), 0 0 0 5px var(--rs-green-dark);
 }
 .rs-root .rs-profile__body { flex: 1; min-width: 0; }
-.rs-root .rs-profile { position: relative; }
 .rs-root .rs-profile__name { display: flex; align-items: center; gap: 6px; font-family: var(--rs-serif); font-size: 18px; font-weight: 700; }
 .rs-root .rs-profile__job { font-size: 13px; font-weight: 600; color: var(--rs-text); }
 .rs-root .rs-profile__state { font-size: 13px; color: var(--rs-text-muted); }
@@ -259,47 +258,17 @@
   padding: 8px 12px;
   background: var(--rs-sand); border-radius: 4px;
 }
-.rs-root .rs-party__item { position: relative; }
 .rs-root .rs-party__name { display: flex; align-items: center; gap: 6px; font-family: var(--rs-serif); font-weight: 700; }
 .rs-root .rs-party__meta { font-size: 12px; color: var(--rs-text-muted); }
 .rs-root .rs-party__hp { font-weight: 800; color: var(--rs-hp); font-variant-numeric: tabular-nums; }
 
-/* ===== 행동완료 표시 [시안 A/B/C] ===== */
-.rs-root .rs-done { display: inline-flex; align-items: center; justify-content: center; flex: none; line-height: 1; }
-
-/* A: 완료 시 이름 옆 녹색 인장 + 노랑 체크 */
-.rs-root[data-done-style="a"] .rs-done {
-  width: 16px; height: 16px; border-radius: 50%;
-  font-family: system-ui, sans-serif; font-size: 10px; font-weight: 900;
-  color: var(--rs-yellow); background: var(--rs-green-dark);
-  box-shadow: 0 0 0 2px var(--rs-sand);
+/* ===== 행동완료 표시: 이름 앞 마름모 (대기 ◇ / 완료 ◆) ===== */
+.rs-root .rs-done {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  order: -1; font-size: 12px; line-height: 1;
 }
-.rs-root[data-done-style="a"] .rs-profile .rs-done { box-shadow: 0 0 0 2px var(--rs-paper); }
-.rs-root[data-done-style="a"] .rs-done::before { content: "✓"; }
-.rs-root[data-done-style="a"] [data-done="false"] .rs-done { display: none; }
-
-/* B: 이름 앞 마름모 (대기 ◇ / 완료 ◆) - 채팅 시스템 메시지 장식과 통일 */
-.rs-root[data-done-style="b"] .rs-done { order: -1; font-size: 12px; }
-.rs-root[data-done-style="b"] [data-done="false"] .rs-done::before { content: "◇"; color: var(--rs-text-muted); }
-.rs-root[data-done-style="b"] [data-done="true"] .rs-done::before { content: "◆"; color: var(--rs-green); }
-
-/* C: 카드 우상단 접힌 모서리 + 체크 */
-.rs-root[data-done-style="c"] .rs-done {
-  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
-}
-.rs-root[data-done-style="c"] .rs-party__item[data-done="true"]::after,
-.rs-root[data-done-style="c"] .rs-profile[data-done="true"]::after {
-  content: "✓"; position: absolute; top: 0; right: 0;
-  width: 22px; height: 22px; padding: 1px 3px 0 0;
-  font-family: system-ui, sans-serif; font-size: 11px; font-weight: 900; text-align: right;
-  color: var(--rs-yellow);
-  background: linear-gradient(225deg, var(--rs-green-dark) 50%, transparent 50%);
-  border-top-right-radius: 4px;
-}
-.rs-root[data-done-style="c"] .rs-profile[data-done="true"]::after {
-  top: -18px; right: -18px; width: 28px; height: 28px; padding: 3px 5px 0 0; font-size: 12px;
-  border-top-right-radius: var(--rs-radius);
-}
+.rs-root [data-done="false"] .rs-done::before { content: "◇"; color: var(--rs-text-muted); }
+.rs-root [data-done="true"] .rs-done::before { content: "◆"; color: var(--rs-green); }
 
 /* 반응형: 1열, 채팅창은 고정 높이 */
 @media (max-width: 768px) {
