@@ -525,6 +525,8 @@
     var remain = state.phase === 'select' ? state.endsAt - Date.now() : 0;
     setText('turn-timer', state.phase === 'select' ? formatRemain(remain) : '--:--');
     $('turn-timer').setAttribute('data-urgent', String(state.phase === 'select' && remain <= 60000));
+    // 남은 시간 비율 (원형 시간 게이지)
+    $('turn-timer').parentNode.style.setProperty('--rs-time', String(state.phase === 'select' ? Math.max(0, remain / TURN_LIMIT_MS) : 0));
   }
 
   function josaName(id, withFinal, withoutFinal) {
