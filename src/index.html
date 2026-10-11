@@ -38,13 +38,11 @@
       <!-- 행동 선택 + 채팅 입력 -->
       <div class="rs-controls">
         <section class="rs-panel rs-action" aria-label="행동 선택">
-          <label class="rs-sr-only" for="rs-action-select">행동 선택</label>
-          <select id="rs-action-select" class="rs-action__select" data-rs="action">
-            <option value="attack">공격</option>
-            <option value="defend">방어</option>
-            <option value="skill">스킬</option>
-            <option value="item">아이템</option>
-          </select>
+          <button type="button" class="rs-btn rs-action__toggle" data-rs="action-toggle"
+                  aria-haspopup="menu" aria-expanded="false" aria-controls="rs-action-menu">행동</button>
+          <!-- 행동 팝업: 항목은 raid.js의 ACTIONS 로 생성 -->
+          <div id="rs-action-menu" class="rs-action__menu" role="menu" aria-label="행동"
+               data-rs="action-menu" hidden></div>
         </section>
 
         <form class="rs-panel rs-chat-input" data-rs="chat-form" autocomplete="off">
