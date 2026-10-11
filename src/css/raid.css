@@ -156,15 +156,15 @@
 .rs-root .rs-action__toggle[aria-expanded="true"] { background: var(--rs-green-deep); box-shadow: inset 0 0 0 2px var(--rs-yellow); }
 .rs-root .rs-action__menu {
   position: absolute; left: 0; bottom: calc(100% + 18px); z-index: 10;
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
-  width: 260px; padding: 12px;
+  display: grid; grid-template-columns: 1fr; gap: 6px;
+  width: 100%; min-width: 160px; padding: 10px;
   background: var(--rs-paper);
   border-radius: var(--rs-radius);
   box-shadow: 0 2px 0 rgba(107, 95, 60, .25), 0 12px 28px rgba(60, 45, 10, .22);
 }
 .rs-root .rs-action__menu[hidden] { display: none; }
 .rs-root .rs-action__item {
-  height: 52px;
+  height: 44px;
   font: inherit; font-family: var(--rs-serif); font-size: 16px; font-weight: 700;
   color: var(--rs-green-dark);
   background: var(--rs-sand);

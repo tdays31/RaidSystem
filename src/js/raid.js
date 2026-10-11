@@ -129,9 +129,16 @@
     return null;
   }
 
+  // 한글 조사 선택: 마지막 글자 받침 유무로 결정 (예: josa('공격', '을', '를'))
+  function josa(word, withFinal, withoutFinal) {
+    var code = String(word).charCodeAt(String(word).length - 1) - 0xac00;
+    var hasFinal = code >= 0 && code <= 11171 && code % 28 !== 0;
+    return word + (hasFinal ? withFinal : withoutFinal);
+  }
+
   function onActionSelect(action) {
     // TODO: 행동별 하위 선택 팝업 연결
-    appendLog(null, action.label + ' 행동을 선택했습니다.', true);
+    appendLog(null, josa(state.player.name, '이', '가') + ' ' + josa(action.label, '을', '를') + ' 선택했습니다.', true);
   }
 
   function renderActionMenu() {
