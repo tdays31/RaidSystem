@@ -306,17 +306,19 @@
 
 /* 공격 / 방어 / 치명 */
 .rs-root .rs-stats {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-  margin: 12px 0 0;
+  display: flex; justify-content: space-between; gap: 6px;
+  margin: 16px 0 0;
 }
-.rs-root .rs-stats__item {
-  padding: 6px 0; text-align: center;
-  background: var(--rs-sand); border-radius: 4px;
-}
-.rs-root .rs-stats dt { font-size: 12px; color: var(--rs-text-muted); }
+/* 능력치: 아이콘 + 라벨 + 값 한 줄 (박스 없음) */
+.rs-root .rs-stats__item { display: flex; align-items: baseline; gap: 6px; }
+.rs-root .rs-stats dt { display: flex; gap: 4px; font-size: 12px; color: var(--rs-text-muted); }
+.rs-root .rs-stats dt::before { color: var(--rs-green); }
+.rs-root .rs-stats__item:nth-child(1) dt::before { content: "⚔"; }
+.rs-root .rs-stats__item:nth-child(2) dt::before { content: "⛨"; }
+.rs-root .rs-stats__item:nth-child(3) dt::before { content: "✦"; }
 .rs-root .rs-stats dd {
   margin: 0;
-  font-family: var(--rs-serif); font-size: 16px; font-weight: 800;
+  font-family: var(--rs-serif); font-size: 17px; font-weight: 800;
   color: var(--rs-green-dark); font-variant-numeric: tabular-nums;
 }
 
