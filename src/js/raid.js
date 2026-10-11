@@ -13,8 +13,19 @@
   var MAX_LOG_ITEMS = 200;
   var MAX_PARTY_SIZE = 5;
 
+  // 직업군 (고정, 변경 불가)
+  // - canHeal: 회복 행동 사용 가능 여부
+  // - defendOthers: 방어 대상으로 타인 지정 가능 여부
+  var JOBS = {
+    healer: { label: '힐러', canHeal: true, defendOthers: false },
+    dealer: { label: '딜러', canHeal: false, defendOthers: false },
+    tank: { label: '탱커', canHeal: false, defendOthers: true }
+  };
+  var JOB_ORDER = ['healer', 'dealer', 'tank'];
+
   // 행동 목록
   // - next: 선택 후 다음 단계 (null: 즉시 확정, 'skill': 스킬 선택, 'target': 대상 선택)
+  // - 직업별 노출/대상 제한은 isActionAvailable(), getTargets() 참고
   var ACTIONS = [
     { id: 'attack', label: '공격', next: null },
     { id: 'skill', label: '스킬', next: 'skill' },
@@ -25,7 +36,7 @@
   // 예시 데이터 (추후 서버 연동 시 교체)
   var state = {
     player: {
-      id: 'self', name: '플레이어', job: '전사', status: '정상', hp: 820, hpMax: 1000, atk: 145, def: 98, crit: 12, done: false,
+      id: 'self', name: '플레이어', job: 'tank', status: '정상', hp: 820, hpMax: 1000, atk: 145, def: 98, crit: 12, done: false,
       skills: [
         { id: 'power-strike', name: '강타' },
         { id: 'war-cry', name: '전투의 함성' },
@@ -33,10 +44,10 @@
       ]
     },
     party: [
-      { id: 'p1', name: '아린', job: '마법사', status: '정상', hp: 540, hpMax: 640, done: true },
-      { id: 'p2', name: '도윤', job: '성기사', status: '방어 중', hp: 1210, hpMax: 1300, done: false },
-      { id: 'p3', name: '세라', job: '사제', status: '정상', hp: 600, hpMax: 600, done: true },
-      { id: 'p4', name: '카이', job: '도적', status: '출혈', hp: 310, hpMax: 720, done: false }
+      { id: 'p1', name: '아린', job: 'dealer', status: '정상', hp: 540, hpMax: 640, done: true },
+      { id: 'p2', name: '도윤', job: 'tank', status: '방어 중', hp: 1210, hpMax: 1300, done: false },
+      { id: 'p3', name: '세라', job: 'healer', status: '정상', hp: 600, hpMax: 600, done: true },
+      { id: 'p4', name: '카이', job: 'dealer', status: '출혈', hp: 310, hpMax: 720, done: false }
     ]
   };
 
@@ -63,6 +74,14 @@
       .slice(0, MAX_MESSAGE_LENGTH);
   }
 
+  function jobLabel(jobId) {
+    return JOBS[jobId] ? JOBS[jobId].label : '-';
+  }
+
+  function playerJob() {
+    return JOBS[state.player.job] || JOBS.dealer;
+  }
+
   // 행동완료 표시: 컨테이너 data-done + 표시 요소(스크린리더용 라벨)
   function applyDone(container, marker, done) {
     container.setAttribute('data-done', String(!!done));
@@ -74,7 +93,7 @@
   function renderProfile(p) {
     setText('profile-name', p.name);
     applyDone($('profile'), $('profile-done'), p.done);
-    setText('profile-job', p.job);
+    setText('profile-job', jobLabel(p.job));
     setText('profile-state', p.status);
     setText('profile-hp', p.hp);
     setText('profile-hp-max', p.hpMax);
@@ -97,7 +116,7 @@
       name.appendChild(marker);
       applyDone(item, marker, m.done);
       info.appendChild(name);
-      info.appendChild(el('div', 'rs-party__meta', m.job + ' · ' + m.status));
+      info.appendChild(el('div', 'rs-party__meta', jobLabel(m.job) + ' · ' + m.status));
       item.appendChild(info);
       item.appendChild(el('div', 'rs-party__hp', m.hp + ' / ' + m.hpMax));
       list.appendChild(item);
@@ -158,18 +177,38 @@
     );
   }
 
+  // 직업별 행동 노출: 회복은 힐러만
+  function isActionAvailable(action) {
+    if (action.id === 'heal') return playerJob().canHeal;
+    return true;
+  }
+
+  // 행동별 대상 목록: 방어는 탱커만 타인 지정 가능
+  function getTargets(action) {
+    var self = { id: state.player.id, name: state.player.name, self: true };
+    if (action.id === 'defend' && !playerJob().defendOthers) return [self];
+    return [self].concat(state.party.slice(0, MAX_PARTY_SIZE).map(function (m) {
+      return { id: m.id, name: m.name, self: false };
+    }));
+  }
+
   function buildMainView() {
     return {
       title: null,
-      items: ACTIONS.map(function (a) {
+      items: ACTIONS.filter(isActionAvailable).map(function (a) {
+        var targets = a.next === 'target' ? getTargets(a) : null;
+        // 대상이 자신뿐이면 대상 단계 없이 바로 선택
+        var singleTarget = targets && targets.length === 1 ? targets[0] : null;
+        var key = singleTarget ? a.id + ':' + singleTarget.id : 'action:' + a.id;
         return {
-          key: 'action:' + a.id,
+          key: key,
           label: a.label,
-          hasNext: a.next !== null,
+          hasNext: a.next !== null && !singleTarget,
           select: function () {
-            if (a.next === 'skill') showView(buildSkillView(a));
+            if (singleTarget) setSelection(key, a, { target: singleTarget });
+            else if (a.next === 'skill') showView(buildSkillView(a));
             else if (a.next === 'target') showView(buildTargetView(a));
-            else setSelection('action:' + a.id, a, {});
+            else setSelection(key, a, {});
           }
         };
       })
@@ -191,13 +230,9 @@
   }
 
   function buildTargetView(action) {
-    var targets = [{ id: state.player.id, name: state.player.name, self: true }]
-      .concat(state.party.slice(0, MAX_PARTY_SIZE).map(function (m) {
-        return { id: m.id, name: m.name, self: false };
-      }));
     return {
       title: action.label + ' 대상',
-      items: targets.map(function (t) {
+      items: getTargets(action).map(function (t) {
         var key = action.id + ':' + t.id;
         return {
           key: key,
@@ -351,6 +386,26 @@
   actionMenu.addEventListener('focusout', function (e) {
     var next = e.relatedTarget;
     if (next && !actionMenu.contains(next) && next !== actionToggle) closeActionMenu(false);
+  });
+
+  // ===== [TEST-ONLY] 직업 변경 (테스트용 임시 기능, 추후 삭제) =====
+  // 실제 게임에서 직업은 고정이며 변경 불가. 이 블록과 index.html의 .rs-dev 블록을 함께 삭제할 것.
+  var devJobSelect = $('dev-job-select');
+
+  JOB_ORDER.forEach(function (id) {
+    var option = el('option', null, JOBS[id].label);
+    option.value = id;
+    devJobSelect.appendChild(option);
+  });
+  devJobSelect.value = state.player.job;
+
+  devJobSelect.addEventListener('change', function () {
+    var id = devJobSelect.value;
+    if (!Object.prototype.hasOwnProperty.call(JOBS, id)) return;
+    state.player.job = id;
+    closeActionMenu(false);
+    renderProfile(state.player);
+    appendLog(null, '[TEST] 직업이 ' + josa(JOBS[id].label, '으로', '로') + ' 변경되었습니다.', true);
   });
 
   // ===== 채팅 =====

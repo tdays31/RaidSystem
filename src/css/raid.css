@@ -270,6 +270,20 @@
 .rs-root [data-done="false"] .rs-done::before { content: "◇"; color: var(--rs-text-muted); }
 .rs-root [data-done="true"] .rs-done::before { content: "◆"; color: var(--rs-green); }
 
+/* [TEST-ONLY] 직업 변경 드롭다운 (추후 삭제) */
+.rs-root .rs-dev {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px; padding: 6px 10px;
+  background: var(--rs-yellow); border-radius: 4px;
+}
+.rs-root .rs-dev__label { font-size: 11px; font-weight: 800; letter-spacing: .06em; color: var(--rs-text); }
+.rs-root .rs-dev__select {
+  flex: 1; min-width: 0; height: 28px; padding: 0 6px;
+  font: inherit; font-size: 13px; color: var(--rs-text);
+  background: var(--rs-paper); border: 0; border-radius: 4px;
+}
+.rs-root .rs-dev__select:focus { outline: 2px solid var(--rs-green-dark); outline-offset: 1px; }
+
 /* 반응형: 1열, 채팅창은 고정 높이 */
 @media (max-width: 768px) {
   .rs-root { grid-template-columns: 1fr; height: auto; min-height: 100vh; padding: 10px; overflow: visible; }
