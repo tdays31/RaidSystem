@@ -13,6 +13,11 @@
   var MAX_LOG_ITEMS = 200;
   var MAX_PARTY_SIZE = 5;
 
+  // [시안] 행동완료 표시 스타일 (?done=a|b|c, 확정 후 제거 예정)
+  var DONE_STYLES = ['a', 'b', 'c'];
+  var requestedDoneStyle = new URLSearchParams(window.location.search).get('done');
+  root.setAttribute('data-done-style', DONE_STYLES.indexOf(requestedDoneStyle) !== -1 ? requestedDoneStyle : 'a');
+
   // 행동 목록
   // - next: 선택 후 다음 단계 (null: 즉시 확정, 'skill': 스킬 선택, 'target': 대상 선택)
   var ACTIONS = [
@@ -25,7 +30,7 @@
   // 예시 데이터 (추후 서버 연동 시 교체)
   var state = {
     player: {
-      id: 'self', name: '플레이어', job: '전사', status: '정상', hp: 820, hpMax: 1000, atk: 145, def: 98, crit: 12,
+      id: 'self', name: '플레이어', job: '전사', status: '정상', hp: 820, hpMax: 1000, atk: 145, def: 98, crit: 12, done: false,
       skills: [
         { id: 'power-strike', name: '강타' },
         { id: 'war-cry', name: '전투의 함성' },
@@ -33,10 +38,10 @@
       ]
     },
     party: [
-      { id: 'p1', name: '아린', job: '마법사', status: '정상', hp: 540, hpMax: 640 },
-      { id: 'p2', name: '도윤', job: '성기사', status: '방어 중', hp: 1210, hpMax: 1300 },
-      { id: 'p3', name: '세라', job: '사제', status: '정상', hp: 600, hpMax: 600 },
-      { id: 'p4', name: '카이', job: '도적', status: '출혈', hp: 310, hpMax: 720 }
+      { id: 'p1', name: '아린', job: '마법사', status: '정상', hp: 540, hpMax: 640, done: true },
+      { id: 'p2', name: '도윤', job: '성기사', status: '방어 중', hp: 1210, hpMax: 1300, done: false },
+      { id: 'p3', name: '세라', job: '사제', status: '정상', hp: 600, hpMax: 600, done: true },
+      { id: 'p4', name: '카이', job: '도적', status: '출혈', hp: 310, hpMax: 720, done: false }
     ]
   };
 
@@ -63,8 +68,17 @@
       .slice(0, MAX_MESSAGE_LENGTH);
   }
 
+  // 행동완료 표시: 컨테이너 data-done + 표시 요소(스크린리더용 라벨)
+  function applyDone(container, marker, done) {
+    container.setAttribute('data-done', String(!!done));
+    marker.setAttribute('role', 'img');
+    marker.setAttribute('aria-label', done ? '행동 완료' : '행동 대기');
+    marker.title = done ? '행동 완료' : '행동 대기';
+  }
+
   function renderProfile(p) {
     setText('profile-name', p.name);
+    applyDone($('profile'), $('profile-done'), p.done);
     setText('profile-job', p.job);
     setText('profile-state', p.status);
     setText('profile-hp', p.hp);
@@ -82,7 +96,12 @@
     shown.forEach(function (m) {
       var item = el('li', 'rs-party__item');
       var info = el('div');
-      info.appendChild(el('div', 'rs-party__name', m.name));
+      var name = el('div', 'rs-party__name');
+      var marker = el('span', 'rs-done');
+      name.appendChild(el('span', null, m.name));
+      name.appendChild(marker);
+      applyDone(item, marker, m.done);
+      info.appendChild(name);
       info.appendChild(el('div', 'rs-party__meta', m.job + ' · ' + m.status));
       item.appendChild(info);
       item.appendChild(el('div', 'rs-party__hp', m.hp + ' / ' + m.hpMax));
@@ -285,6 +304,8 @@
     var message = describeSelection(selection);
     closeActionMenu(true);
     appendLog(null, message, true);
+    state.player.done = true;
+    renderProfile(state.player);
   }
 
   actionToggle.addEventListener('click', function () {
