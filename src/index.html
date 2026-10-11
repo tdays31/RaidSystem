@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Raid System</title>
+  <link rel="stylesheet" href="css/raid.css">
+</head>
+<body>
+  <!-- 홈페이지 삽입 시 #raid-system 블록 + raid.css + raid.js 만 가져가면 됨 -->
+  <div id="raid-system" class="rs-root">
+    <main class="rs-main">
+      <!-- 턴 수 / 레이드 보스 상태 -->
+      <section class="rs-panel rs-boss" aria-label="레이드 상태">
+        <div class="rs-boss__turn">
+          <span class="rs-label">TURN</span>
+          <span class="rs-boss__turn-value" data-rs="turn">1</span>
+        </div>
+        <div class="rs-boss__info">
+          <div class="rs-boss__name" data-rs="boss-name">레이드 보스</div>
+          <div class="rs-bar" role="progressbar" aria-label="보스 체력"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" data-rs="boss-hp-bar">
+            <div class="rs-bar__fill rs-bar__fill--hp" data-rs="boss-hp-fill"></div>
+          </div>
+          <div class="rs-boss__state" data-rs="boss-state">대기 중</div>
+        </div>
+      </section>
+
+      <!-- 채팅 출력 -->
+      <section class="rs-panel rs-chat-log" aria-label="채팅 기록">
+        <ul class="rs-chat-log__list" data-rs="chat-log" aria-live="polite"></ul>
+      </section>
+
+      <!-- 행동 선택 + 채팅 입력 -->
+      <div class="rs-controls">
+        <section class="rs-panel rs-action" aria-label="행동 선택">
+          <label class="rs-sr-only" for="rs-action-select">행동 선택</label>
+          <select id="rs-action-select" class="rs-action__select" data-rs="action">
+            <option value="attack">공격</option>
+            <option value="defend">방어</option>
+            <option value="skill">스킬</option>
+            <option value="item">아이템</option>
+          </select>
+        </section>
+
+        <form class="rs-panel rs-chat-input" data-rs="chat-form" autocomplete="off">
+          <label class="rs-sr-only" for="rs-chat-text">채팅 입력</label>
+          <input id="rs-chat-text" class="rs-chat-input__text" type="text"
+                 maxlength="200" placeholder="메시지를 입력하세요" data-rs="chat-text">
+          <button type="submit" class="rs-btn">전송</button>
+        </form>
+      </div>
+    </main>
+
+    <aside class="rs-side">
+      <!-- 프로필 카드 -->
+      <section class="rs-panel rs-profile" aria-label="프로필">
+        <div class="rs-profile__avatar" aria-hidden="true"></div>
+        <div class="rs-profile__body">
+          <div class="rs-profile__name" data-rs="profile-name">플레이어</div>
+          <div class="rs-profile__state" data-rs="profile-state">정상</div>
+          <div class="rs-bar" aria-label="체력">
+            <div class="rs-bar__fill rs-bar__fill--hp" data-rs="profile-hp-fill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 파티원 상태 -->
+      <section class="rs-panel rs-party" aria-label="파티원 상태">
+        <h2 class="rs-panel__title">파티원</h2>
+        <ul class="rs-party__list" data-rs="party-list"></ul>
+      </section>
+    </aside>
+  </div>
+
+  <script src="js/raid.js" defer></script>
+</body>
+</html>
