@@ -1,0 +1,2 @@
+/* 데모 페이지 전용 (홈페이지 삽입 시 제외) */
+html, body { margin: 0; padding: 0; height: 100%; }

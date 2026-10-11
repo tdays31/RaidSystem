@@ -7,6 +7,7 @@
         content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>Raid System</title>
+  <link rel="stylesheet" href="css/page.css">
   <link rel="stylesheet" href="css/raid.css">
 </head>
 <body>
@@ -58,19 +59,28 @@
     <aside class="rs-side">
       <!-- 프로필 카드 -->
       <section class="rs-panel rs-profile" aria-label="프로필">
-        <div class="rs-profile__avatar" aria-hidden="true"></div>
-        <div class="rs-profile__body">
-          <div class="rs-profile__name" data-rs="profile-name">플레이어</div>
-          <div class="rs-profile__state" data-rs="profile-state">정상</div>
-          <div class="rs-bar" aria-label="체력">
-            <div class="rs-bar__fill rs-bar__fill--hp" data-rs="profile-hp-fill"></div>
+        <div class="rs-profile__head">
+          <div class="rs-profile__avatar" aria-hidden="true"></div>
+          <div class="rs-profile__body">
+            <div class="rs-profile__name" data-rs="profile-name">플레이어</div>
+            <div class="rs-profile__job" data-rs="profile-job">-</div>
+            <div class="rs-profile__state" data-rs="profile-state">-</div>
+          </div>
+          <div class="rs-hp">
+            <span class="rs-label">HP</span>
+            <span class="rs-hp__value"><span data-rs="profile-hp">0</span> / <span data-rs="profile-hp-max">0</span></span>
           </div>
         </div>
+        <dl class="rs-stats">
+          <div class="rs-stats__item"><dt>공격</dt><dd data-rs="profile-atk">0</dd></div>
+          <div class="rs-stats__item"><dt>방어</dt><dd data-rs="profile-def">0</dd></div>
+          <div class="rs-stats__item"><dt>치명</dt><dd data-rs="profile-crit">0%</dd></div>
+        </dl>
       </section>
 
-      <!-- 파티원 상태 -->
+      <!-- 파티원 상태 (최대 5명) -->
       <section class="rs-panel rs-party" aria-label="파티원 상태">
-        <h2 class="rs-panel__title">파티원</h2>
+        <h2 class="rs-panel__title">파티원 <span data-rs="party-count">0/5</span></h2>
         <ul class="rs-party__list" data-rs="party-list"></ul>
       </section>
     </aside>
