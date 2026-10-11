@@ -49,9 +49,9 @@
       id: 'self', name: '플레이어', job: 'tank', status: '정상', hp: 820, hpMax: 1000, atk: 145, def: 98, crit: 12,
       done: false, choice: null,
       skills: [
-        { id: 'power-strike', name: '강타', power: 1.6 },
-        { id: 'war-cry', name: '전투의 함성', power: 1.2 },
-        { id: 'whirlwind', name: '회오리 베기', power: 1.4 }
+        { id: 'power-strike', name: '강타', power: 1.6, desc: '온 힘을 실은 일격으로 보스에게 큰 피해를 입힌다.' },
+        { id: 'war-cry', name: '전투의 함성', power: 1.2, desc: '함성과 함께 돌진해 보스를 공격한다.' },
+        { id: 'whirlwind', name: '회오리 베기', power: 1.4, desc: '몸을 회전하며 연속으로 베어낸다.' }
       ]
     },
     party: [
@@ -199,6 +199,21 @@
     });
 
     setText('party-count', shown.length + '/' + MAX_PARTY_SIZE);
+  }
+
+  // 보유 스킬 설명 (위력 = 공격력 대비 배율)
+  function renderSkills(skills) {
+    var list = $('skill-list');
+    list.replaceChildren();
+    skills.forEach(function (skill) {
+      var item = el('li', 'rs-skills__item');
+      var head = el('div', 'rs-skills__head');
+      head.appendChild(el('span', 'rs-skills__name', skill.name));
+      head.appendChild(el('span', 'rs-skills__power', '공격력 ' + Math.round(skill.power * 100) + '%'));
+      item.appendChild(head);
+      item.appendChild(el('p', 'rs-skills__desc', skill.desc || ''));
+      list.appendChild(item);
+    });
   }
 
   function renderBoss() {
@@ -846,6 +861,7 @@
   });
 
   renderAll();
+  renderSkills(state.player.skills);
   appendLog(null, '레이드에 입장했습니다.', 'system');
   timerId = setInterval(tickTimer, 1000);
   mockServer.start();

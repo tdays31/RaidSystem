@@ -62,6 +62,7 @@
     </main>
 
     <aside class="rs-side">
+      <div class="rs-side__card rs-side__card--status">
       <!-- 프로필 카드 -->
       <section class="rs-panel rs-profile" aria-label="프로필" data-rs="profile">
         <div class="rs-profile__head">
@@ -88,6 +89,13 @@
       <section class="rs-panel rs-party" aria-label="파티원 상태">
         <h2 class="rs-panel__title">파티원 <span data-rs="party-count">0/5</span></h2>
         <ul class="rs-party__list" data-rs="party-list"></ul>
+      </section>
+      </div>
+
+      <!-- 보유 스킬 설명 -->
+      <section class="rs-side__card rs-panel rs-skills" aria-label="보유 스킬">
+        <h2 class="rs-panel__title">보유 스킬</h2>
+        <ul class="rs-skills__list" data-rs="skill-list"></ul>
       </section>
     </aside>
   </div>

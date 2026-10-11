@@ -57,7 +57,7 @@
 
 /* 레이아웃 */
 .rs-root .rs-main,
-.rs-root .rs-side {
+.rs-root .rs-side__card {
   min-width: 0;
   min-height: 0;
   background: var(--rs-paper);
@@ -72,9 +72,19 @@
 .rs-root .rs-side {
   display: flex;
   flex-direction: column;
+  gap: var(--rs-gap);
+  min-width: 0;
+  min-height: 0;
+}
+/* 사이드 카드: 상단(프로필+파티원) / 하단(보유 스킬, 남은 높이 차지) */
+.rs-root .rs-side__card {
+  display: flex;
+  flex-direction: column;
   gap: 24px;
   padding: 18px;
 }
+.rs-root .rs-side__card--status { flex: none; }
+.rs-root .rs-side__card.rs-skills { flex: 1; overflow-y: auto; gap: 0; }
 .rs-root .rs-controls {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -327,6 +337,18 @@
   font-family: var(--rs-serif); font-size: 15px; font-weight: 800;
   color: var(--rs-hp); font-variant-numeric: tabular-nums;
 }
+
+/* 보유 스킬 */
+.rs-root .rs-skills__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.rs-root .rs-skills__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.rs-root .rs-skills__name { font-family: var(--rs-serif); font-size: 15px; font-weight: 700; color: var(--rs-green-dark); }
+.rs-root .rs-skills__power {
+  flex: none; padding: 0 6px;
+  font-size: 11px; font-weight: 700; line-height: 17px;
+  color: var(--rs-text-muted); background: var(--rs-sand); border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.rs-root .rs-skills__desc { margin: 2px 0 0; font-size: 13px; line-height: 1.5; color: var(--rs-text-muted); word-break: keep-all; }
 
 /* 공개된 행동 선택 */
 .rs-root .rs-choice { font-size: 12px; font-weight: 700; color: var(--rs-green-dark); }
