@@ -131,8 +131,14 @@
 }
 .rs-root .rs-chat-log__item--system .rs-chat-log__body::before,
 .rs-root .rs-chat-log__item--system .rs-chat-log__body::after { content: " ◆ "; color: var(--rs-lime); }
+/* 이름 | 본문 2열: 긴 메시지는 본문 열 안에서 줄바꿈 (이름 아래는 비움) */
+.rs-root .rs-chat-log__body--with-author {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline;
+  column-gap: 10px;
+}
+.rs-root .rs-chat-log__text { min-width: 0; overflow-wrap: anywhere; }
 .rs-root .rs-chat-log__author {
-  margin-right: 6px;
+  white-space: nowrap;
   font-family: var(--rs-serif); font-weight: 700;
   color: var(--rs-green-dark);
 }

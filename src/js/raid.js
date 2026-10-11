@@ -109,9 +109,9 @@
 
   function appendLog(author, message, isSystem) {
     var item = el('li', 'rs-chat-log__item' + (isSystem ? ' rs-chat-log__item--system' : ''));
-    var body = el('span', 'rs-chat-log__body');
+    var body = el('span', 'rs-chat-log__body' + (author ? ' rs-chat-log__body--with-author' : ''));
     if (author) body.appendChild(el('span', 'rs-chat-log__author', author));
-    body.appendChild(document.createTextNode(message));
+    body.appendChild(el('span', 'rs-chat-log__text', message));
     item.appendChild(createTimeStamp(new Date()));
     item.appendChild(body);
     chatLog.appendChild(item);
