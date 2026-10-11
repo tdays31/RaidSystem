@@ -12,11 +12,6 @@
   var MAX_MESSAGE_LENGTH = 200;
   var MAX_LOG_ITEMS = 200;
   var MAX_PARTY_SIZE = 5;
-
-  // [시안] 턴 시작/결과 띠 스타일 (?banner=a|b|c, 확정 후 제거 예정)
-  var BANNER_STYLES = ['a', 'b', 'c'];
-  var requestedBanner = new URLSearchParams(window.location.search).get('banner');
-  if (BANNER_STYLES.indexOf(requestedBanner) !== -1) root.setAttribute('data-banner', requestedBanner);
   var TURN_LIMIT_MS = 10 * 60 * 1000; // 턴 제한 시간 10분
   var EVENT_INTERVAL_MS = 450;        // 턴 결과 이벤트 출력 간격
 
