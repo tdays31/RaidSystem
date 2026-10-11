@@ -21,7 +21,6 @@
     dealer: { label: '딜러', canHeal: false, defendOthers: false },
     tank: { label: '탱커', canHeal: false, defendOthers: true }
   };
-  var JOB_ORDER = ['healer', 'dealer', 'tank'];
 
   // 행동 목록
   // - next: 선택 후 다음 단계 (null: 즉시 확정, 'skill': 스킬 선택, 'target': 대상 선택)
@@ -386,26 +385,6 @@
   actionMenu.addEventListener('focusout', function (e) {
     var next = e.relatedTarget;
     if (next && !actionMenu.contains(next) && next !== actionToggle) closeActionMenu(false);
-  });
-
-  // ===== [TEST-ONLY] 직업 변경 (테스트용 임시 기능, 추후 삭제) =====
-  // 실제 게임에서 직업은 고정이며 변경 불가. 이 블록과 index.html의 .rs-dev 블록을 함께 삭제할 것.
-  var devJobSelect = $('dev-job-select');
-
-  JOB_ORDER.forEach(function (id) {
-    var option = el('option', null, JOBS[id].label);
-    option.value = id;
-    devJobSelect.appendChild(option);
-  });
-  devJobSelect.value = state.player.job;
-
-  devJobSelect.addEventListener('change', function () {
-    var id = devJobSelect.value;
-    if (!Object.prototype.hasOwnProperty.call(JOBS, id)) return;
-    state.player.job = id;
-    closeActionMenu(false);
-    renderProfile(state.player);
-    appendLog(null, '[TEST] 직업이 ' + josa(JOBS[id].label, '으로', '로') + ' 변경되었습니다.', true);
   });
 
   // ===== 채팅 =====
