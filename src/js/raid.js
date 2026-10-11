@@ -96,10 +96,24 @@
   var chatForm = $('chat-form');
   var chatText = $('chat-text');
 
+  function pad2(n) {
+    return (n < 10 ? '0' : '') + n;
+  }
+
+  // 채팅 시간 요소 (표시: HH:MM, datetime: ISO)
+  function createTimeStamp(date) {
+    var time = el('time', 'rs-chat-log__time', pad2(date.getHours()) + ':' + pad2(date.getMinutes()));
+    time.setAttribute('datetime', date.toISOString());
+    return time;
+  }
+
   function appendLog(author, message, isSystem) {
     var item = el('li', 'rs-chat-log__item' + (isSystem ? ' rs-chat-log__item--system' : ''));
-    if (author) item.appendChild(el('span', 'rs-chat-log__author', author));
-    item.appendChild(document.createTextNode(message));
+    var body = el('span', 'rs-chat-log__body');
+    if (author) body.appendChild(el('span', 'rs-chat-log__author', author));
+    body.appendChild(document.createTextNode(message));
+    item.appendChild(createTimeStamp(new Date()));
+    item.appendChild(body);
     chatLog.appendChild(item);
 
     while (chatLog.children.length > MAX_LOG_ITEMS) {
